@@ -1,10 +1,14 @@
-# Jukebox
+# PetBox
 
-  Esse projeto envolve a criação de um aplicativo que concede aos amantes do mundo da música
-a oportunidade de avaliar e comentar sobre músicas, álbuns e artistas no geral, armazenando
-as avaliações em seu perfil e criando um registro das experiências musicais ao longo
-do uso do aplicativo.
-  Possivelmente o projeto será uma rede social, onde os diversos usuários possuem acessos
-aos perfis e, portanto, às avaliações feitas pelos usuários e suas experiências.
-  De modo mais ousado, pode vir a ser implementada uma conexão com as contas dos usuários
-em aplicativos de streaming de músicas, como o Spotify.
+  Esse projeto envolve a criação de um site cujo objetivo é facilitar o processo de adoção
+de bichinhos, tanto para ONGs quanto para usuários individuais. O objetivo é implementar uma
+interface acessível e eficiente para os usuários visando ajudar os animais desabrigados
+a encontrarem um lar.
+  Pretendemos criar um sistema de busca com filtros, um algoritmo de recomendação baseado
+nas preferências de cada usuário e um quadro de postagens, onde usuários podem publicar
+informações sobre animais de rua que encontrarem e ONGs podem requisitar auxílios e divulgar
+campanhas. Além disso, um sistema de chat entre os usuários para possibilitar a comunicação
+sem a necessidade de uso de aplicativos externos.
+  Os usuários e as ONGs podem adicionar informações a seus perfis de modo que se tornem mais
+confiáveis para o processo de adoção. Também podem ocorrer acompanhamentos no perfil dos
+usuários sobre os bichinhos que adotaram e das ONGs sobre os bichinhos disponíveis para a adoção.

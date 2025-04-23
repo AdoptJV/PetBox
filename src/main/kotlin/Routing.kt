@@ -1,21 +1,35 @@
 package com.jvdev
-
+import com.jvdev.com.database.connectToDatabase
+import com.jvdev.com.database.insertUser
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.time.LocalDate
-
-import com.jvdev.com.jvdev.models.User
+import com.jvdev.com.models.User
+import io.ktor.http.*
+import io.ktor.server.request.*
+import java.io.File
 
 fun Application.configureRouting() {
     routing {
         get("/") {
-            val usr : User = User("1", "Marcelo",
-                LocalDate.of(2005, 10, 10),
-                "jpbarioni@usp.br", "12345", "url",
-                "43999478536", "Londrina", "Admin")
-            val age : Int = usr.getAge()
-            call.respondText("I am $age years old!")
+            call.respondFile(File("src/main/resources/HtmlData/HomePage.html"))
         }
+        get ("/register") {
+            call.respondFile(File("src/main/resources/HtmlData/Register.html"))
+        }
+        post("/register") {
+            val parameters = call.receiveParameters()
+            val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+
+            val connection = connectToDatabase()
+
+            if (insertUser(connection , User(username, email, password)))
+                call.respondFile(File("src/main/resources/HtmlData/RegisterSuccessfully.html"))
+            else
+                call.respondFile(File("src/main/resources/HtmlData/RegisterFailed.html"))
+        }
+
     }
 }

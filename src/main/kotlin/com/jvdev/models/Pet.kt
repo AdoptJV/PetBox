@@ -6,10 +6,10 @@ data class Pet (
     val id : String,
     val species : String,
     val sex : Boolean,
-    val name : String,
-    val age : Int,
-    val castrated : Boolean,
-    val photoUrl : String,
+    val name : String?,
+    val age : Int?,
+    val castrated : String,
+    val photoUrl : String?,
     val owner : User,
-    val registered : LocalDate
+    val registered : LocalDate = LocalDate.now()
 )

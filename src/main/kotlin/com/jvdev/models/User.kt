@@ -9,11 +9,11 @@ data class User (
     val birthday : LocalDate,
     val email : String,
     val psw : String,
-    val pfpUrl : String,
-    val phone : String,
-    val location : Location,
-    val address : String,
-    val description : String,
+    val pfpUrl : String?,
+    val phone : String?,
+    val location : Location?,
+    val address : String?,
+    val description : String?,
     val usrType : String,
     val joined : LocalDate = LocalDate.now()
 ) {

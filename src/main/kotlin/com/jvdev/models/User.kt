@@ -11,7 +11,7 @@ data class User (
     val psw : String,
     val pfpUrl : String?,
     val phone : String?,
-    val location : Location,
+    val location : Location?,
     val address : String?,
     val description : String?,
     val usrType : String,

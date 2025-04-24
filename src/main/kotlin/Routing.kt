@@ -8,10 +8,6 @@ import com.jvdev.com.models.User
 import io.ktor.http.*
 import io.ktor.server.request.*
 import java.io.File
-import java.time.LocalDate
-
-
-import com.jvdev.com.jvdev.models.User
 
 fun Application.configureRouting() {
     routing {

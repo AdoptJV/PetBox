@@ -8,8 +8,7 @@ import com.jvdev.com.models.User
 import io.ktor.http.*
 import io.ktor.server.request.*
 import java.io.File
-import com.jvdev.buscarEndereco
-import kotlinx.coroutines.*
+import com.jvdev.com.cep.buscarEndereco
 
 fun Application.configureRouting() {
     routing {

@@ -1,8 +1,6 @@
 package com.jvdev.com.models
 
-import com.jvdev.Endereco
-import java.time.LocalDate
-import java.time.Period
+import com.jvdev.com.cep.Endereco
 
 @JvmInline
 value class UserID(val value: String)

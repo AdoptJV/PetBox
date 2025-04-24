@@ -1,6 +1,5 @@
 package com.jvdev.com.models
 
-import java.math.BigInteger
 import java.time.LocalDate
 
 enum class Sex { MALE, FEMALE }

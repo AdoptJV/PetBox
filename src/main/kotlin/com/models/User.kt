@@ -1,7 +1,6 @@
 package com.jvdev.com.models
 
-import java.time.LocalDate
-import java.time.Period
+import com.jvdev.com.cep.Endereco
 
 @JvmInline
 value class UserID(val value: String)
@@ -16,7 +15,7 @@ data class User (
     val psw : String,                               // user password
     // val pfpUrl : String,                            // user profile photo URL
     // val phone : String,                             // user phone number
-    // val location : Location,                        // use location
+    val address : Endereco                          // user address
     // val address : String,                           // user address
     // val description : String? = null,               // user description
     // val usrType : UserType,                         // user type

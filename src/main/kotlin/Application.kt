@@ -12,7 +12,9 @@ fun Application.module() {
     configureSecurity()
     configureRouting()
     install(CORS) {
-        allowHost("http://localhost:3000")
+        //allowHost("http://localhost:3000")
+        anyHost()   // APAGAR ESSA LINHA DEPOIS!!!
+        allowHost("localhost:8080", schemes = listOf("http", "https"))
         allowHeader(HttpHeaders.ContentType)
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)

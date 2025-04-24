@@ -1,4 +1,5 @@
 val kotlin_version: String by project
+val ktor_version: String by project
 val logback_version: String by project
 
 plugins {
@@ -21,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-server-cors:$ktor_version")
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-auth")
     implementation("io.ktor:ktor-server-netty")

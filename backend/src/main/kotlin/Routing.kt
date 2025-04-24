@@ -9,14 +9,19 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import java.io.File
 import com.jvdev.com.cep.buscarEndereco
+import io.ktor.server.http.content.*
 
 fun Application.configureRouting() {
     routing {
+        static {
+            files("frontend")  // Relative to working directory
+            default("home.html")
+        }
         get("/") {
-            call.respondFile(File("frontend/HomePage.html"))
+            call.respondFile(File("frontend/html/HomePage.html"))
         }
         get ("/register") {
-            call.respondFile(File("frontend/Register.html"))
+            call.respondFile(File("frontend/html/Register.html"))
         }
         post("/register") {
             val parameters = call.receiveParameters()
@@ -30,9 +35,9 @@ fun Application.configureRouting() {
             val endereco = buscarEndereco(cep)
 
             if (insertUser(connection , User(username, email, password, endereco)))
-                call.respondFile(File("frontend/RegisterSuccessfully.html"))
+                call.respondFile(File("frontend/html/RegisterSuccessfully.html"))
             else
-                call.respondFile(File("frontend/RegisterFailed.html"))
+                call.respondFile(File("frontend/html/RegisterFailed.html"))
         }
         get("/cep/{cep}") {
             val cep = call.parameters["cep"] ?: return@get call.respondText("CEP não informado", status = io.ktor.http.HttpStatusCode.BadRequest)

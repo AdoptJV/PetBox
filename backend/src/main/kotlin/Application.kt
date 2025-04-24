@@ -19,5 +19,4 @@ fun Application.module() {
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
     }
-
 }

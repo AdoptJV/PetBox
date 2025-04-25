@@ -26,10 +26,18 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktor_version")    // CORS
 
     implementation("io.ktor:ktor-server-core:$ktor_version")
+
+    // Authentication
     implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-server-sessions:$ktor_version")
+
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
+    // bcrypt (encriptação de senhas)
+    implementation("at.favre.lib:bcrypt:0.10.2")
 
     // HTTP Client
     implementation("io.ktor:ktor-client-core:$ktor_version")

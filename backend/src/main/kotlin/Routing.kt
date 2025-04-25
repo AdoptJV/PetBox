@@ -9,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import java.io.File
 import com.jvdev.com.cep.buscarEndereco
+import com.jvdev.com.encryption.pswUtil
 import io.ktor.server.http.content.*
 
 fun Application.configureRouting() {
@@ -25,16 +26,20 @@ fun Application.configureRouting() {
         }
         post("/register") {
             val parameters = call.receiveParameters()
+
             val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+
             val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val hashedPsw = pswUtil.generateHash(password)
+
             val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+
             val cep = parameters["cep"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val endereco = buscarEndereco(cep)
 
             val connection = connectToDatabase()
 
-            val endereco = buscarEndereco(cep)
-
-            if (insertUser(connection , User(username, email, password, endereco)))
+            if (insertUser(connection , User(username, email, hashedPsw, endereco)))
                 call.respondFile(File("frontend/html/RegisterSuccessfully.html"))
             else
                 call.respondFile(File("frontend/html/RegisterFailed.html"))

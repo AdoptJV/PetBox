@@ -14,10 +14,12 @@ import io.ktor.server.http.content.*
 
 fun Application.configureRouting() {
     routing {
-        static {
-            files("frontend")  // Relative to working directory
-            default("home.html")
-        }
+        staticFiles("/",File("frontend"))
+
+//        static {
+//            files("frontend")  // Relative to working directory
+//            default("home.html")
+//        }
         get("/") {
             call.respondFile(File("frontend/html/HomePage.html"))
         }

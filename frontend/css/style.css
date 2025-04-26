@@ -1,4 +1,58 @@
 body {
-    background-color: black;
+    background-color: #99c1f1;
     color: white;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    height: 100vh;
+
+    display: grid;
+    place-items: center;
+}
+
+.titlebox {
+    background-color: rgba(200, 200, 200);
+    color: #63452c;
+
+    font-size: 30px;
+
+    text-align: center;
+    vertical-align: middle;
+
+    width: 500px;
+    height: 500px;
+
+    border-radius: 10px;
+}
+
+.titlebox img{
+    width: 50%;
+    height: auto;
+}
+
+.titlebox button{
+    background-color: #b5835a;
+    color: #63452c;
+
+    box-shadow: 3px 5px #999;
+
+    font-size: 20px;
+
+    text-align: center;
+
+    height: 50px;
+    width: 150px;
+
+    border: none;
+    border-radius: 5px;
+}
+
+.titlebox button:hover{
+    background-color: #bd8b62;
+}
+
+.titlebox button:active{
+    background-color: #bd8b62;
+    box-shadow: 0 0 #000;
+    transform: translate(3px, 5px);
 }

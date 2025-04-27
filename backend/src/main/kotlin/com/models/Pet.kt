@@ -5,7 +5,7 @@ import java.time.LocalDate
 enum class Sex { MALE, FEMALE }
 
 @JvmInline
-value class PetID(val value: String)
+value class PetID(val value: Int)
 
 data class Pet (
     val id : PetID,                  // identification

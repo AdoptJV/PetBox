@@ -32,6 +32,6 @@ val httpClient = HttpClient(CIO) {
 }
 
 suspend fun buscarEndereco(cep: String): Endereco {
-    val url = "https://viacep.com.br/ws/$cep/json/"
+    val url = "https://viacep.com.br/ws/$cep/json/" // see https://viacep.com.br/
     return httpClient.get(url).body()
 }

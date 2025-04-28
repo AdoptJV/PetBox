@@ -9,6 +9,7 @@ import io.ktor.server.request.*
 import java.io.File
 import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.database.insertPet
+import com.jvdev.com.database.queryAllPets
 import com.jvdev.com.database.queryUser
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.models.Pet
@@ -39,11 +40,20 @@ fun Application.configureRouting() {
             )))
         }
         get ("/register-pet") { // pagina de registro de pet
+            if (call.sessions.get<UserSession>() == null) { call.respond(HttpStatusCode.Unauthorized) } // precisa estar logado
             call.respondFile(File("$root/frontend/html/RegisterPetPage.html"))
         }
         get ("/login") { // pagina de login de usuario
             call.respondFile(File("$root/frontend/html/LoginPage.html"))
         }
+
+        get("/pets") {
+            val pets = queryAllPets() // pets no banco de dados
+            call.respond(FreeMarkerContent("PetsPage.ftl", mapOf(
+                "pets" to (pets)
+            )))
+        }
+
         get("/cep/{cep}") { // (oq isso faz, joão? ) !!!!!
             val cep = call.parameters["cep"] ?: return@get call.respondText("CEP não informado", status = io.ktor.http.HttpStatusCode.BadRequest)
             try {
@@ -86,6 +96,7 @@ fun Application.configureRouting() {
                 )))
         }
         post("/register-pet") {
+            val userSession = call.sessions.get<UserSession>()
             val parameters = call.receiveParameters()
 
             // recebe os parametros
@@ -104,7 +115,7 @@ fun Application.configureRouting() {
                     age = age,
                     castrated = castrated,
                     photoUrl = null,
-                    owner = 1
+                    owner = userSession!!.id
                 )
             ))
                 call.respondRedirect("/")

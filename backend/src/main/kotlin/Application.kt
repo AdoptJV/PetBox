@@ -10,6 +10,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureSecurity()
+    configureSessions()
     configureRouting()
     install(CORS) {
         //allowHost("http://localhost:3000")

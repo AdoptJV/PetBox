@@ -7,7 +7,8 @@ object pswUtil {
     fun generateHash(psw : String) : String =
         BCrypt.withDefaults().hashToString(bcryptCost, psw.toCharArray())
 
-    fun verify(psw : String, hash : String) : Boolean =
-        BCrypt.verifyer().verify(psw.toCharArray(), hash).verified
+    fun verify(psw : String, hash : String) : Boolean {
+        return BCrypt.verifyer().verify(psw.toCharArray(), hash).verified
+    }
 
 }

@@ -15,7 +15,7 @@ fun insertPet(pet: Pet): Boolean {
         val sql = """
         INSERT INTO PETS
         (specie, sex, name, age, castrated, photoURL, owner, registered) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
         val smtm = connection.prepareStatement(sql)
         smtm.setString(1, pet.species)

@@ -1,30 +1,23 @@
 package com.jvdev.com.models
 
 import com.jvdev.com.cep.Endereco
+import java.time.LocalDate
 
-@JvmInline
-value class UserID(val value: String)
+typealias UserID = Int
 
 enum class UserType {REGULAR, ONG}
 
 data class User (
-    // val id : UserID,                                // user id
+    val id : UserID,                                // user id
+    val username : String,                          // unique username
     val name : String,                              // user name
-    // val birthday : LocalDate,                       // user birthday
+    val birthday : LocalDate,                       // user birthday
     val email : String,                             // user email
     val psw : String,                               // user password
-    // val pfpUrl : String,                            // user profile photo URL
-    // val phone : String,                             // user phone number
-    val address : Endereco                          // user address
-    // val address : String,                           // user address
-    // val description : String? = null,               // user description
-    // val usrType : UserType,                         // user type
-    // val joined : LocalDate = LocalDate.now()        // user joined date
-) {
-    /*
-    public fun getAge() : Int {
-        return Period.between(birthday, LocalDate.now()).years
-    }
-     */
-
-}
+    val phone : String,                             // user phone number
+    val address : Endereco,                         // user address
+    val usrType : UserType = UserType.REGULAR,      // user type
+    val joined : LocalDate = LocalDate.now(),       // user joined date
+    val pfpUrl : String? = null,                    // user profile photo URL
+    val description : String? = null,               // user description
+)

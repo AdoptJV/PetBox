@@ -9,40 +9,54 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import java.io.File
 import com.jvdev.com.cep.buscarEndereco
-import com.jvdev.com.encryption.pswUtil
+import com.jvdev.com.models.UserID
 import io.ktor.server.http.content.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 fun Application.configureRouting() {
+    val root = File(System.getProperty("user.dir")).let {
+        if (File(it, "frontend").exists()) it
+        else it.parentFile
+    }
     routing {
-        static {
-            files("frontend")  // Relative to working directory
-            default("home.html")
-        }
+        staticFiles("/", File("$root/frontend"))
         get("/") {
-            call.respondFile(File("frontend/html/HomePage.html"))
+            call.respondFile(File("$root/frontend/html/HomePage.html"))
         }
         get ("/register") {
-            call.respondFile(File("frontend/html/Register.html"))
+            call.respondFile(File("$root/frontend/html/RegisterUser.html"))
         }
         post("/register") {
             val parameters = call.receiveParameters()
 
             val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-
+            val name = parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val hashedPsw = pswUtil.generateHash(password)
-
             val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-
+            val birthday = parameters["birthday"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val phone = parameters["phone"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val cep = parameters["cep"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val endereco = buscarEndereco(cep)
-
+            val description = parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val connection = connectToDatabase()
 
-            if (insertUser(connection , User(username, email, hashedPsw, endereco)))
-                call.respondFile(File("frontend/html/RegisterSuccessfully.html"))
+            println(username + name + password + email + birthday + cep + description)
+
+            if (insertUser(
+                    User(
+                        id = -1,
+                        username = username,
+                        name = name,
+                        psw = password,
+                        address = buscarEndereco(cep) ,
+                        birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
+                        email = email,
+                        phone = phone,
+                        description = description
+                    )))
+                call.respondFile(File("$root/frontend/html/RegisterSuccessfully.html"))
             else
-                call.respondFile(File("frontend/html/RegisterFailed.html"))
+                call.respondFile(File("$root/frontend/html/RegisterFailed.html"))
         }
         get("/cep/{cep}") {
             val cep = call.parameters["cep"] ?: return@get call.respondText("CEP não informado", status = io.ktor.http.HttpStatusCode.BadRequest)

@@ -21,10 +21,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun Application.configureRouting() {
-    val root = File(System.getProperty("user.dir")).let { // define o caminho até a raiz do projeto
-        if (File(it, "frontend").exists()) it
-        else it.parentFile
-    }
+    val root = File(System.getProperty("user.dir")) // define o caminho até a raiz do projeto
+
+    println(root)
     routing {
         staticFiles("/", File("$root/frontend")) // path estatico
         get("/") { // pagina inicial

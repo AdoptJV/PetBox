@@ -10,12 +10,17 @@ import io.ktor.server.request.*
 import java.io.File
 import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.models.UserID
+import io.ktor.server.http.content.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun Application.configureRouting() {
-    val root = File(System.getProperty("user.dir")).parentFile
+    val root = File(System.getProperty("user.dir")).let {
+        if (File(it, "frontend").exists()) it
+        else it.parentFile
+    }
     routing {
+        staticFiles("/", File("$root/frontend"))
         get("/") {
             call.respondFile(File("$root/frontend/html/HomePage.html"))
         }

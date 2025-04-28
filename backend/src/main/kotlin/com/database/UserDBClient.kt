@@ -2,12 +2,7 @@ package com.jvdev.com.database
 import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.models.User
-import com.jvdev.com.models.UserID
 import com.jvdev.com.models.UserType
-import java.nio.file.Paths
-import java.sql.Connection
-import java.sql.Date
-import java.sql.DriverManager
 import java.sql.SQLException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

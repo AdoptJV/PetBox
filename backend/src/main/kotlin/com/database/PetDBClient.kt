@@ -15,11 +15,11 @@ fun insertPet(pet: Pet): Boolean {
         val sql = """
         INSERT INTO PETS
         (specie, sex, name, age, castrated, photoURL, owner, registered) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
-        val smtm = connection.prepareStatement(sql)
+        val smtm = connection.prepareStatement(sql) ?: throw SQLException("Failed to execute SQL statement.")
         smtm.setString(1, pet.species)
-        smtm.setBoolean(2, pet.sex == Sex.MALE)
+        smtm.setString(2, if (pet.sex == Sex.MALE) "MALE" else "FEMALE")
         smtm.setString(3, pet.name)
         smtm.setInt(4, pet.age)
         smtm.setBoolean(5, pet.castrated)
@@ -36,4 +36,25 @@ fun insertPet(pet: Pet): Boolean {
     finally {
         connection.close()
     }
+}
+
+fun queryAllPets(): List<Pet> {
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+    val sql = "SELECT * FROM PETS"
+    val resultSet = connection.createStatement().executeQuery(sql) ?: throw SQLException("Failed to execute SQL statement.")
+    val pets = mutableListOf<Pet>()
+    while (resultSet.next()) {
+        pets.add(
+         Pet(
+             id = resultSet.getInt("id"),
+             species = resultSet.getString("specie"),
+             name = resultSet.getString("name"),
+             age = resultSet.getInt("age"),
+             photoUrl = resultSet.getString("photoUrl"),
+             castrated = resultSet.getBoolean("castrated"),
+             owner = resultSet.getInt("owner"),
+             sex = Sex.valueOf(resultSet.getString("sex")))
+         )
+    }
+    return pets
 }

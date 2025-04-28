@@ -53,7 +53,12 @@ dependencies {
     // Créditos: https://github.com/thiago-cury/viacep-android-kotlin-retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.3.0")
     implementation("com.squareup.retrofit2:converter-gson:2.3.0")
+    implementation("io.ktor:ktor-server-content-negotiation:3.1.2")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    // FreeMaker pra html dinamico
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
+    implementation("io.ktor:ktor-server-freemarker:2.2.1")
 }

@@ -3,42 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Pagina inicial PetBox</title>
+    <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
-<h1>Seja Bem-vindo ao PetBox!</h1>
-<div id="welcome-message">
-    <#if isUserLoggedIn>
-        Olá, ${username}! Bem vindo de volta.
-    </#if>
-</div>
-
-<div id="login-logout-actions">
-    <br>
-    <div>
-        <p>
-            Adote um pet aqui!
-        </p>
-        <div>
-            <a href="/pets"> <button type="button"> Pets </button></a>
+<div class="titlebox">
+    <img alt="Logo PetBox" src="/assets/bigLogo.svg">
+    <div class="rightcontent">
+        <div class="innerright">
+        <div class="options">
+            <#if isUserLoggedIn>
+                Olá, ${username}! Bem-vindo(a) de volta.
+            <#else>
+                Olá! Seja bem-vindo(a) ao PetBox!
+            </#if>
+            <div><a href="/pets"> <button type="button"> Pets </button></a></div>
         </div>
+
+        <div class="options">
+            <#if isUserLoggedIn>
+                Registre um pet!<br>
+                <div>
+                <a href="/register-pet">
+                    <button type="button">Cadastrar pet</button>
+                </a>
+                <form action="/logout" method="post">
+                    <button type="submit">Logout</button>
+                </form>
+                </div>
+            <#else>
+                Entre ou faça seu cadastro!<br>
+                <div>
+                    <a href="/login">
+                        <button type="button">Login</button>
+                    </a>
+                    <a href="/register-user">
+                        <button type="button">Registre-se</button>
+                    </a>
+                </div>
+            </#if>
+        </div>
+        </div>
+
     </div>
-    <br>
-
-    <#if isUserLoggedIn>
-
-        <div id="register-pet">
-            <a href="/register-pet"> <button type="button">Cadastrar pet:</button></a>
-        </div>
-        <br>
-        <form action="/logout" method="post">
-            <button type="submit">Logout</button>
-        </form>
-    <#else>
-            <a href="/login"><button type="submit">Login:</button></a>
-            <br>
-            <p>
-                Não possui cadastro?
-            </p>
-            <a href="/register-user"><button type="button">Registre-se:</button></a>
-    </#if>
 </div>

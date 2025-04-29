@@ -1,0 +1,116 @@
+body {
+    background-image: url("/assets/clouds.png");
+    background-position: center bottom;
+    background-size: 100%;
+    background-color: #a1c8ff;
+    color: #63452c;
+
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+
+    display: grid;
+    place-items: center;
+}
+
+.titlebox {
+    color: #63452c;
+
+    width: 100%;
+
+    font-size: 30px;
+
+    text-align: center;
+    vertical-align: middle;
+
+    border-radius: 10px;
+    padding: 20px;
+
+    display: flex;
+}
+
+.titlebox img{
+    height: 600px;
+    flex: 0 0 40%;
+    /*filter: drop-shadow(3px 0px 0 #63452c)
+    drop-shadow(0px 3px 0 #63452c)
+    drop-shadow(-3px -0px 0 #63452c)
+    drop-shadow(-0px -3px 0 #63452c);*/
+    filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.4));
+}
+
+.titlebox button{
+    background-color: #986a44;
+    color: #63452c;
+
+    box-shadow: 3px 5px #63452c;
+
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    font-size: 20px;
+
+    text-align: center;
+
+    height: 50px;
+    width: 150px;
+
+    border: none;
+    border-radius: 5px;
+}
+
+.titlebox button:hover{
+    background-color: #a3754f;
+}
+
+.titlebox button:active{
+    background-color: #a3754f;
+    box-shadow: 0 0 #000;
+    transform: translate(3px, 5px);
+}
+
+.rightcontent{
+    flex: 1;
+    display: grid;
+    place-content: center;
+    gap: 20px;
+}
+
+.innerright{
+    height: 100%;
+    border: 10px solid transparent;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.options {
+    background-color: #bd8b62;
+    padding: 20px;
+    flex-grow: 1;
+
+    /*border: 3px solid #63452c;*/
+    border-radius: 10px;
+
+    box-shadow: rgba(0,0,0,0.4) 3px 3px;
+
+    color: #63452c;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    gap: 20px;
+    text-align: center;
+    height: 50%;
+}
+
+.options a,
+.options form {
+    display: inline-block;
+}

@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Cadastre seu Pet!</title>
+  <link rel="stylesheet" href="/css/petregister.css">
 </head>
 <body>
-<div class="outerdiv">
+<div class="formbox">
   <form method="post" action="/register-pet" enctype="multipart/form-data">
     <div class="innerdiv">
       <label for="name"> Nome do Pet:</label>
@@ -17,16 +18,16 @@
       <input type="text" id="specie" name="specie" placeholder="Espécie" required>
     </div>
     <br>
-    <div class="innerdiv">
-      <label for="age"> Idade:</label>
-      <input type="number" id="age" name="age" placeholder="Idade" min="0" max="99" required>
+    <div>
+      <label for="age" > Idade:</label>
+      <input style="width: 60px;" type="number" id="age" name="age" placeholder="Idade" min="0" max="99" required>
     </div>
     <br>
     <div class="innerdiv">
       <label for="sex"> Sexo: </label>
       <select id="sex" name="sex" required>
         <option value="MALE" selected> Macho</option>
-        s<option value="FEMALE"> Fêmea </option>
+        <option value="FEMALE"> Fêmea </option>
       </select>
     </div>
     <br>

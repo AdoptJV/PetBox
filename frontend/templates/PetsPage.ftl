@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Pets</title>
+    <link rel="stylesheet" href="/css/pets.css">
 </head>
 <body>
-<h1>Pets disponíveis</h1>
+<div class="titlebox">Esses pets estão à busca de um lar!</div>
 <ul>
     <#list pets as pet>
-        <li>
+        <li class="pets">
             <strong>Nome:</strong> ${pet.name} <br>
             <strong>Espécie:</strong> ${pet.species} <br>
             <strong>Idade:</strong> ${pet.age} anos <br>
             <strong>Sexo:</strong> ${pet.sex} <br>
             <strong>Castrado:</strong> ${pet.castrated?string("Sim", "Não")} <br>
-            <hr>
         </li>
     </#list>
 </ul>

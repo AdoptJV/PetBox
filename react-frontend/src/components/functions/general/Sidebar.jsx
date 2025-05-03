@@ -26,7 +26,7 @@ function Sidebar(bool) {
                         background: "#f8f9fa",
                         borderRight: collapsed ? "none" : "1px solid #dee2e6",
                         padding: collapsed ? "0" : "1rem",
-                        position: "relative",
+                        position: "fixed",
                     }}
                 >
                     {/* Inner content with transition */}

@@ -8,7 +8,7 @@ function Navbar() {
 
     return (
         <>
-            <nav className="navbar navbar-dark" style={{ backgroundColor: "#a1c8ff" }}>
+            <nav className="navbar navbar-dark" style={{ backgroundColor: "#a1c8ff", fontWeight: "bold" }}>
                 <button onClick={toggleSidebar} className="navbar-toggler mx-2" type="button">
                     <span className="navbar-toggler-icon"></span>
                 </button>

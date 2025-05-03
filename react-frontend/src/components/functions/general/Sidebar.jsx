@@ -46,7 +46,7 @@ function Sidebar(bool) {
                             <hr/>
                             <li>
                                 <button className="btn d-flex align-items-center" onClick={() => navigate('/search')}>
-                                    <img src={search} alt={"Search"} className="mx-2"/>BUSCAR</button>
+                                    <img src={search} alt={"Buscar"} className="mx-2"/>BUSCAR</button>
                             </li>
                             <hr/>
                             <li>
@@ -56,7 +56,7 @@ function Sidebar(bool) {
                             <hr/>
                             <li>
                                 <button className="btn d-flex align-items-center" onClick={() => navigate('/petregister')}>
-                                    <img src={register} alt={"Register"} className="mx-2"/>REGISTRAR PET</button>
+                                    <img src={register} alt={"Registrar Pet"} className="mx-2"/>REGISTRAR PET</button>
                             </li>
                             <hr/>
                             <li>
@@ -66,7 +66,7 @@ function Sidebar(bool) {
                             <hr/>
                             <li>
                                 <button className="btn d-flex align-items-center" onClick={() => navigate('/settings')}>
-                                    <img src={gear} alt={"gear"} className="mx-2"/>Configurações</button>
+                                    <img src={gear} alt={"Confirgurações"} className="mx-2"/>Configurações</button>
                             </li>
                             <hr/>
                             <li>

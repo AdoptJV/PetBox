@@ -40,6 +40,30 @@ fun insertUser(user: User): Boolean { // insert user in database
 }
 
 /* consulta */
+
+fun checkUser(username: String): Boolean {
+    val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
+    try {
+        val sql = """
+        SELECT * FROM USERS WHERE username = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+        statement.setString(1, username)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) return true
+        return false
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+    }
+    finally {
+        connection.close()
+    }
+    return false
+}
+
 suspend fun queryUser(username: String): User? {
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     try {
@@ -78,7 +102,11 @@ suspend fun queryUser(username: String): User? {
                 description = description
             )
         }
+        else {
+            return null
+        }
     }
+
     catch (e: SQLException) {
         e.printStackTrace()
         return null

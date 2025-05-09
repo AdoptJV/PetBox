@@ -18,6 +18,11 @@ function LandingMenu() {
         }));
     };
 
+    const redirect = (e) => {
+        e.preventDefault();
+        navigate("register");
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault(); // 🔐 Prevent full page reload
         console.log("Form submitted:", formData);
@@ -43,7 +48,7 @@ function LandingMenu() {
     };
 
     return (
-        <div className="container my-5">
+        <div className="container my-5">1
             <div className="card shadow" style={{ backgroundColor: "#f3f3f3" }}>
                 <h5 className="card-title my-3">Seja bem-vindo(a) ao PetBox!</h5>
                 <div className="card-body">
@@ -90,6 +95,7 @@ function LandingMenu() {
                             type="button"
                             className="btn"
                             style={{ backgroundColor: "#c1c1c1" }}
+                            onClick={redirect}
                         >
                             Registre-se
                         </button>

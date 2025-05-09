@@ -9,8 +9,12 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
 import com.jvdev.com.ApiResponse
+import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
+import com.jvdev.com.models.User
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 fun Application.configureRouting() {
     val root = File(System.getProperty("user.dir")) // define o caminho até a raiz do projeto
@@ -22,6 +26,9 @@ fun Application.configureRouting() {
         }
         route("/api") {
             staticFiles("/", File("$root/frontend")) // path estatico
+            get("/") {
+                call.respondText("Servidor rodando!!")
+            }
             post("/") {
                 val request = call.receive<Map<String, String>>()
                 println("Received from React: ${request}")
@@ -47,8 +54,23 @@ fun Application.configureRouting() {
                     "redirect" to "/login?error=2",
                     "message" to "Invalid credentials"
                 ))
-
             }
+            get("/buscar-cep/{cep}") {
+                val cep = call.parameters["cep"] ?: return@get call.respond(HttpStatusCode.BadRequest, "CEP inválido")
+                try {
+                    val endereco = buscarEndereco(cep)
+                    println(endereco)
+                    call.respond(endereco)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "Erro ao buscar o CEP")
+                }
+            }
+
+            get("/check/{username}"){
+                val username = call.parameters["username"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Usarname inválido")
+                call.respond(mapOf("exists" to checkUser(username)))
+            }
+
 //            get("/") { // pagina inicial
 //                val userSession = call.sessions.get<UserSession>()
 //                call.respond(
@@ -106,43 +128,41 @@ fun Application.configureRouting() {
 //                }
 //            }
 //
-//            post("/register-user") { // registra usuario
-//                val parameters = call.receiveParameters()
-//
-//                // recebe os parametros
-//                val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val name = parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val birthday = parameters["birthday"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val phone = parameters["phone"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val cep = parameters["cep"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//                val description = parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-//
-//                if (insertUser(
-//                        User(
-//                            id = -1,
-//                            username = username,
-//                            name = name,
-//                            psw = password,
-//                            address = buscarEndereco(cep),
-//                            birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
-//                            email = email,
-//                            phone = phone,
-//                            description = description
-//                        )
-//                    )
-//                )
-//                    call.respondRedirect("/")
-//                else
-//                    call.respond(
-//                        FreeMarkerContent(
-//                            "RegisterUser.ftl", mapOf(
-//                                "failedRegister" to (true)
-//                            )
-//                        )
-//                    )
-//            }
+            post("/register-user") { // registra usuario
+                val parameters = call.receiveParameters()
+
+                // recebe os parametros
+                val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val name = parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val birthday = parameters["birthday"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val phone = parameters["phone"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val cep = parameters["cep"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                // val description = parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+
+                if (insertUser(
+                        User(
+                            id = -1,
+                            username = username,
+                            name = name,
+                            psw = password,
+                            address = buscarEndereco(cep),
+                            birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
+                            email = email,
+                            phone = phone,
+                            description = null
+                        )
+                    )
+                )
+                    call.respond(mapOf(
+                        "redirect" to "/home",
+                        "message" to "success"))
+                else
+                    call.respond(mapOf(
+                        "redirect" to "/register?error=1",
+                        "message" to "failure"))
+            }
 //            post("/register-pet") {
 //                val userSession = call.sessions.get<UserSession>()
 //                val parameters = call.receiveParameters()

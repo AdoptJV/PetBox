@@ -21,6 +21,7 @@ function Sidebar(bool) {
                 <div
                     style={{
                         width: `${sidebarWidth}px`,
+                        height: "100%",
                         overflow: "hidden",
                         transition: "width 0.3s ease",
                         background: "#f8f9fa",

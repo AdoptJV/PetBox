@@ -5,15 +5,14 @@ import io.ktor.server.routing.*
 import io.ktor.http.*
 import io.ktor.server.request.*
 import java.io.File
-import io.ktor.server.freemarker.*
 import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
-import com.jvdev.com.ApiResponse
 import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
 import com.jvdev.com.models.User
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 fun Application.configureRouting() {
@@ -129,17 +128,28 @@ fun Application.configureRouting() {
 //            }
 //
             post("/register-user") { // registra usuario
-                val parameters = call.receiveParameters()
+                val parameters = call.receive<Map<String, String>>()
 
+                println("chegou no servidor")
+                println(parameters)
                 // recebe os parametros
                 val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val name = parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-                val birthday = parameters["birthday"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val birthdateRaw = parameters["birthdate"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val phone = parameters["phone"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val cep = parameters["cep"] ?: return@post call.respond(HttpStatusCode.BadRequest)
                 // val description = parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+
+                val birthdate: LocalDate = try {
+                    OffsetDateTime.parse(birthdateRaw)
+                        .toLocalDate()
+                } catch (e: Exception) {
+                    LocalDate.parse(birthdateRaw.substring(0, 10))
+                }
+
+                println("passou na consistencia")
 
                 if (insertUser(
                         User(
@@ -148,7 +158,7 @@ fun Application.configureRouting() {
                             name = name,
                             psw = password,
                             address = buscarEndereco(cep),
-                            birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
+                            birthday = birthdate,
                             email = email,
                             phone = phone,
                             description = null

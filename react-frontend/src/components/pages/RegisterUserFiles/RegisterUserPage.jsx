@@ -12,66 +12,53 @@ import UseTerms from "./Components/UseTerms.jsx";
 
 function RegisterUserPage() {
     const [formData, setFormData] = useState({
-        name: '',
-        lastName: '',
-        birthdate: '',
-        phone: '',
-        email: '',
-        username: '',
-        password: '',
-        cep: '',
+        name: "",
+        lastName: "",
+        birthdate: "",
+        phone: "",
+        email: "",
+        username: "",
+        password: "",
+        cep: "",
         terms: false,
     });
-
-    const [response, setResponse] = useState(""); // Novo estado para armazenar a resposta
+    const [response, setResponse] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: type === 'checkbox' ? checked : value,
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
         }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Form submitted:", formData);
-
         try {
             const res = await fetch("http://localhost:8080/api/register-user", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
-
             const text = await res.text();
-            console.log("Server response:", text);
-
             let data;
             try {
                 data = JSON.parse(text);
-            } catch (jsonError) {
-                console.error("Erro ao converter a resposta em JSON:", jsonError);
+            } catch {
                 setResponse("Erro ao processar a resposta do servidor.");
                 return;
             }
-
-            if (data.redirect) {
-                navigate(data.redirect); // Realiza o redirecionamento
-            } else {
-                setResponse(`Erro: ${data.message || "Problema no servidor"}`);
-            }
-        } catch (err) {
-            console.error("Erro ao enviar a requisição:", err);
+            if (data.redirect) navigate(data.redirect);
+            else setResponse(`Erro: ${data.message || "Problema no servidor"}`);
+        } catch {
             setResponse("Erro ao enviar dados para o servidor.");
         }
     };
 
     return (
-        <form className="container justify-content-center mt-5" onSubmit={handleSubmit}>
+        <form className="container mt-5" onSubmit={handleSubmit}>
             <div className="row mb-3">
                 <Name value={formData.name} onChange={handleChange} />
                 <LastName value={formData.lastName} onChange={handleChange} />
@@ -91,22 +78,25 @@ function RegisterUserPage() {
                 <Cep value={formData.cep} onChange={handleChange} />
             </div>
             <div className="row mb-3">
-                <div className="col-12">
-                    <UseTerms />
-                    <div className="form-check">
-                        <input className="form-check-input" type="checkbox" id="Termos" name="terms" checked={formData.terms} onChange={handleChange}/>
-                        <label className="form-check-label" htmlFor="Termos">
-                            Aceito os termos
-                        </label>
-                    </div>
+                <UseTerms />
+                <div className="form-check">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="Termos"
+                        name="terms"
+                        checked={formData.terms}
+                        onChange={handleChange}
+                    />
+                    <label className="form-check-label" htmlFor="Termos">
+                        Aceito os termos
+                    </label>
                 </div>
             </div>
-            <div className="row">
-                <div className="col-12">
-                    <button type="submit" className="btn btn-primary">Registrar</button>
-                </div>
-            </div>
-            {response && <div className="alert alert-info mt-3">{response}</div>} {/* Exibindo a resposta do servidor */}
+            <button type="submit" className="btn btn-primary">
+                Registrar
+            </button>
+            {response && <div className="alert alert-info mt-3">{response}</div>}
         </form>
     );
 }

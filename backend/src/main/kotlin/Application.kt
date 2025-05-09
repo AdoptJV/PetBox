@@ -16,6 +16,9 @@ fun main(args: Array<String>) {
 fun Application.module() {
     configureSecurity()
     configureSessions()
+    install(ContentNegotiation) {
+        json()
+    }
     install(CORS) {
         //allowHost("http://localhost:3000")
         anyHost()   // APAGAR ESSA LINHA DEPOIS!!!
@@ -28,18 +31,6 @@ fun Application.module() {
         methods.addAll(HttpMethod.DefaultMethods)
         headers.addAll(listOf(HttpHeaders.ContentType))
     }
-    install(FreeMarker) { //
-        val root = File(System.getProperty("user.dir")).let {
-            if (File(it, "frontend").exists()) it
-            else it.parentFile
-        }
-        templateLoader = FileTemplateLoader(File("$root/frontend/templates"))
-
-    }
-    install(ContentNegotiation) {
-        json()
-    }
-
     configureRouting()
 
 }

@@ -10,7 +10,7 @@ const UsernameForm = ({ value, onChange }) => {
             return;
         }
         const delay = setTimeout(() => {
-            axios.get(`http://localhost:8080/api/check/${value}`)
+            axios.get(`http://localhost:8080/api/check/username/${value}`)
                 .then(resp => {
                     if (resp.data.exists) setError("Usuário já existe");
                     else setError(null);

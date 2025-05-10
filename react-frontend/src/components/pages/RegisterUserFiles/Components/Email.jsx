@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Email = ({ value, onChange }) => {
     const [error, setError] = useState(null);
@@ -9,7 +10,20 @@ const Email = ({ value, onChange }) => {
             return;
         }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        setError(emailRegex.test(value) ? null : "Email inválido");
+        if (emailRegex.test(value)) {
+            const delay = setTimeout(() => {
+                axios.get(`http://localhost:8080/api/check/email/${value}`)
+                .then(resp => {
+                    if (resp.data.exists) setError("Email já utilizado");
+                    else setError(null);
+                })
+                .catch(() => setError("Erro ao verificar o email"));
+            }, 500);
+            return () => clearTimeout(delay);
+        }
+        else {
+            setError("Email inválido");
+        }
     }, [value]);
 
     const inputClass = value === ""

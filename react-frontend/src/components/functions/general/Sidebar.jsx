@@ -6,12 +6,35 @@ import ongs from "../../../assets/bookmark-heart.svg"
 import gear from "../../../assets/gear.svg"
 import logout from "../../../assets/box-arrow-left.svg"
 import { useNavigate } from "react-router-dom"
+import {useState} from "react";
 
 function Sidebar(bool) {
     let collapsed = bool.collapsed;
     const sidebarWidth = collapsed ? 0 : 250;
 
+    const [response, setResponse] = useState("");
     const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // 🔐 Prevent full page reload
+
+        try {
+            const res = await fetch("http://localhost:8080/api/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            const data = await res.json();
+            if (data.redirect) {
+                navigate(data.redirect);
+            }
+            setResponse(`Server echoed: ${data.echo}`);
+        } catch (err) {
+            console.error(err);
+            setResponse("Error sending message");
+        }
+    };
+
     return (
         <>
             <link rel="stylesheet"
@@ -71,7 +94,7 @@ function Sidebar(bool) {
                             </li>
                             <hr/>
                             <li>
-                                <button className="btn d-flex align-items-center" onClick={() => navigate('/logout')}>
+                                <button className="btn d-flex align-items-center" onClick={handleSubmit}>
                                     <img src={logout} alt={"Logout"} className="mx-2"/>Logout</button>
                             </li>
                         </ul>

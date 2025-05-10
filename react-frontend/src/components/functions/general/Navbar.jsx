@@ -6,6 +6,24 @@ import { useEffect, useState } from "react";
 function Navbar() {
     const [collapsed, setCollapsed] = useState(false);
     const toggleSidebar = () => setCollapsed(!collapsed);
+    const [username, setUsername] = useState("");
+
+
+    useEffect(() => {
+        fetch("http://localhost:8080/api/home", {
+            credentials: "include",
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Usuário não logado");
+                return res.json();
+            })
+            .then(data => {
+                setUsername(data.username);
+            })
+            .catch(() => {
+                setUsername("");
+            });
+    }, []);
 
     return (
         <>
@@ -16,7 +34,7 @@ function Navbar() {
 
                 <a className="navbar-brand" href="/profile">
                     <img src={userIcon} width="35" height="35" className="mx-3 d-inline-block align-top" alt="Foto do usuário"/>
-                    Marcelo Queiroz
+                    {username}
                 </a>
 
                 <a className="navbar-brand ms-auto" href="/home">

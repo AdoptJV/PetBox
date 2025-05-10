@@ -11,7 +11,7 @@ const Cep = ({ value, onChange }) => {
     useEffect(() => {
         const v = value.replace(/\D/g, "");
         if (v.length === 8) {
-            axios.get(`http://localhost:8080/api/buscar-cep/${v}`)
+            axios.get(`http://localhost:8080/api/cep-info/${v}`)
                 .then(r => {
                     setEndereco(r.data);
                     setError(null);

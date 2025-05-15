@@ -7,8 +7,16 @@ import java.sql.SQLException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-/* Modificação */
-fun insertUser(user: User): Boolean { // insert user in database
+/* Operações de Modificação */
+
+/**
+ * Registra um novo usuário no sistema
+ *
+ * @param user Objeto user contendo dados do usuário
+ * @return booleano informando se deu certo a inserção
+ * @throws SQLException conexão com o banco de dados falhou
+ */
+fun insertUser(user: User): Boolean {
     val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
     val sql = """
       INSERT INTO USERS
@@ -32,15 +40,80 @@ fun insertUser(user: User): Boolean { // insert user in database
 
         return stmt.executeUpdate() == 1 // verifica se uma linha foi atualizada no banco de dados
     } catch (e: SQLException) {
-        e.printStackTrace()   // log
+        e.printStackTrace()   // log erro
         return false
     } finally {
         stmt.close()
     }
 }
 
-/* consulta */
-suspend fun queryUser(username: String): User? {
+/* Operações de consulta */
+
+/**
+ * Verifica se existe um usuário com 'username' no banco de dados
+ *
+ * @param username username que será buscado
+ * @return booleano que indica se o username está sendo utilizado
+ * @throws SQLException conexão com o banco de dados falhou
+ */
+
+fun checkUsername(username: String): Boolean {
+    val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
+    try {
+        val sql = """
+        SELECT * FROM USERS WHERE username = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+        statement.setString(1, username)
+        val resultSet = statement.executeQuery()
+        return resultSet.next()
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+    }
+    finally {
+        connection.close()
+    }
+    return false
+}
+
+/**
+ * Verifica se existe um usuário com 'email' no banco de dados
+ *
+ * @param email email que será buscado
+ * @return booleano que indica se o email está sendo utilizado
+ * @throws SQLException conexão com o banco de dados falhou
+ */
+fun checkEmail(email: String): Boolean {
+    val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
+    try {
+        val sql = """
+            SELECT * FROM USERS WHERE email = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+        statement.setString(1, email)
+        val resultSet = statement.executeQuery()
+        return resultSet.next()
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+    }
+    finally {
+        connection.close()
+    }
+    return false
+}
+
+/**
+ * Retorna um objeto user correspondente ao usuário com 'username'
+ *
+ * @param username username para buscar no banco de dados
+ * @return User? caso exista o usuário com o 'username' retorna o objeto correspondente. Caso contrário retorna null
+ * @throws SQLException conexão com o banco de dados falhou
+ */
+suspend fun getUserByUsername(username: String): User? {
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     try {
         val sql = """
@@ -78,6 +151,8 @@ suspend fun queryUser(username: String): User? {
                 description = description
             )
         }
+        else return null
+
     }
     catch (e: SQLException) {
         e.printStackTrace()
@@ -86,6 +161,4 @@ suspend fun queryUser(username: String): User? {
     finally {
         connection.close()
     }
-    return null
 }
-

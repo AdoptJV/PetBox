@@ -37,7 +37,9 @@ fun Application.configureRouting() {
                 val session = call.sessions.get<UserSession>()
                 if (session == null) {
                     if (debug) println("não esta logado")
-                    call.respond(HttpStatusCode.Forbidden)
+                    call.respond(HttpStatusCode.Forbidden, mapOf(
+                        "username" to ""
+                    ) )
                 } else {
                     if (debug) println("esta logado")
                     call.respond(HttpStatusCode.OK, mapOf(

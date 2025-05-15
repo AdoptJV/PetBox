@@ -49,10 +49,10 @@ function LandingMenu() {
     };
 
     return (
-        <div className="container my-5">1
-            <div className="card shadow" style={{ backgroundColor: "#f3f3f3" }}>
-                <h5 className="card-title my-3">Seja bem-vindo(a) ao PetBox!</h5>
-                <div className="card-body">
+        <div className="container my-5">
+            <div className="card shadow border-1 border-black rounded-4" style={{ backgroundColor: "#f3f3f3" }}>
+                <h5 className="card-title my-3 ">Seja bem-vindo(a) ao PetBox!</h5>
+                <div className="card-body ">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label htmlFor="exampleInputUsername1" className="form-label">
@@ -61,7 +61,7 @@ function LandingMenu() {
                             <input
                                 type="text"
                                 name="username"
-                                className="form-control"
+                                className="form-control rounded-4 border-black"
                                 id="exampleInputUsername1"
                                 value={formData.username}
                                 onChange={handleChange}
@@ -74,7 +74,7 @@ function LandingMenu() {
                             <input
                                 type="password"
                                 name="password"
-                                className="form-control"
+                                className="form-control rounded-4 border-black"
                                 id="exampleInputPassword1"
                                 value={formData.password}
                                 onChange={handleChange}
@@ -82,8 +82,8 @@ function LandingMenu() {
                         </div>
                         <button
                             type="submit"
-                            className="btn"
-                            style={{ backgroundColor: "#c1c1c1" }}
+                            className="btn rounded-2"
+                            style={{ backgroundColor: "#c1c1c1"}}
                         >
                             Login
                         </button>
@@ -94,7 +94,7 @@ function LandingMenu() {
                         <br />
                         <button
                             type="button"
-                            className="btn"
+                            className="btn rounded-2"
                             style={{ backgroundColor: "#c1c1c1" }}
                             onClick={redirect}
                         >

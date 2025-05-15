@@ -1,4 +1,4 @@
-import petboxLogo from "../../../assets/bigLogo.svg";
+import petboxLogo from "../../../../assets/bigLogo.svg";
 
 function LandingLogo() {
     return <img src={petboxLogo} alt={"PetBox Logo"} width={"100%"}

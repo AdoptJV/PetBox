@@ -1,6 +1,6 @@
-import LandingLogo from "../functions/landing/LandingLogo.jsx";
-import LandingMenu from "../functions/landing/LandingMenu.jsx";
-import clouds from "../../assets/clouds.png";
+import LandingLogo from "./Components/LandingLogo.jsx";
+import LandingMenu from "./Components/LandingMenu.jsx";
+import clouds from "../../../assets/clouds.png";
 
 function LandingPage() {
     return (

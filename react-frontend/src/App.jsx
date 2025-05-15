@@ -1,13 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import LandingPage from "./components/pages/LandingPage.jsx"
-import HomePage from "./components/pages/HomePage.jsx";
-import RegisterPetPage from "./components/pages/RegisterPetPage.jsx";
+import LandingPage from "./components/pages/LandingPageFiles/LandingPage.jsx"
+import HomePage from "./components/pages/HomePageFiles/HomePage.jsx";
+import RegisterPetPage from "./components/pages/RegisterPetFiles/RegisterPetPage.jsx";
 import RegisterUserPage from "./components/pages/RegisterUserFiles/RegisterUserPage.jsx";
-import Cep from "./components/pages/RegisterUserFiles/Components/Cep.jsx";
 
 function App() {
+
     return (
         <Router>
             <Routes>

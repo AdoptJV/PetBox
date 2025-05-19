@@ -1,5 +1,5 @@
-import petboxLogo from "../../../assets/smallLogo.svg"
-import userIcon from "../../../assets/person-circle.svg"
+import petboxLogo from "../../assets/smallLogo.svg"
+import userIcon from "../../assets/person-circle.svg"
 import { useEffect, useState } from "react";
 
 function Navbar({ collapsed, toggleSidebar }) {
@@ -15,7 +15,13 @@ function Navbar({ collapsed, toggleSidebar }) {
     }, []);
 
     return (
-        <nav className="navbar navbar-dark sticky-top" style={{ backgroundColor: "#a1c8ff", fontWeight: "bold" }}>
+        <nav className="navbar navbar-dark sticky-top"
+             style={{
+                 position: "sticky",
+                 width: "100%",
+                 backgroundColor: "#a1c8ff",
+                 fontWeight: "bold"
+        }}>
             <button onClick={toggleSidebar} className="navbar-toggler mx-2" type="button">
                 <span className="navbar-toggler-icon"></span>
             </button>

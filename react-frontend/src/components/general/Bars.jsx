@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import Navbar from "./Navbar.jsx";
+import Sidebar from "./Sidebar.jsx";
 
 function Bars({ children }) {
     const [collapsed, setCollapsed] = useState(false);

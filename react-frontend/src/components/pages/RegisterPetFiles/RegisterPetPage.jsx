@@ -1,4 +1,4 @@
-import Navbar from "../../functions/general/Navbar.jsx";
+import Navbar from "../../general/Navbar.jsx";
 
 function RegisterPetPage() {
     return (

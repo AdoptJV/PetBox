@@ -1,10 +1,10 @@
-import home from "../../../assets/house-heart.svg"
-import search from "../../../assets/search-heart.svg"
-import chat from "../../../assets/chat-left-heart.svg"
-import register from "../../../assets/clipboard-heart.svg"
-import ongs from "../../../assets/bookmark-heart.svg"
-import gear from "../../../assets/gear.svg"
-import logout from "../../../assets/box-arrow-left.svg"
+import home from "../../assets/house-heart.svg"
+import search from "../../assets/search-heart.svg"
+import chat from "../../assets/chat-left-heart.svg"
+import register from "../../assets/clipboard-heart.svg"
+import ongs from "../../assets/bookmark-heart.svg"
+import gear from "../../assets/gear.svg"
+import logout from "../../assets/box-arrow-left.svg"
 import { useNavigate } from "react-router-dom"
 import {useState} from "react";
 

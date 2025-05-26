@@ -12,8 +12,11 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureSessions() //  configura as informações de sessão de usuario para login
+
     configureSecurity()
-    configureSessions()
+
+
     install(ContentNegotiation) {
         json()
     }

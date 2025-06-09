@@ -16,10 +16,16 @@ usuários sobre os bichinhos que adotaram e das ONGs sobre os bichinhos disponí
 # Como rodar?
 
   Por enquanto, a execução ocorre com um servidor local na sua máquina (localhost). Primeiramente, suba a API do backend utilizando
-```./gradlew run```
-no diretório PetBox. A API é hosteada na porta 8080, acessível pelo broswer em localhost:8080/api. Então, rode o frontend utilizando
-```npm run dev```
-no diretório PetBox/react-frontend. O frontend é hosteado na porta 5173, acessível em localhost:5173/login (é a landing page).
+  
+  ```./gradlew run```
+  
+  no diretório PetBox. A API é hosteada na porta 8080, acessível pelo broswer em localhost:8080/api.
+  
+  Então, rode o frontend utilizando
+  
+  ```npm run dev```
+  
+  no diretório PetBox/react-frontend. O frontend é hosteado na porta 5173, acessível em localhost:5173/login (é a landing page).
   Basta criar um usuário e faça o login com as credenciais utilizadas para ganhar acesso ao website.
 
 # Tecnologias utilizadas:

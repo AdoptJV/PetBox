@@ -11,8 +11,20 @@ import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
 import com.jvdev.com.models.User
+import io.ktor.http.content.*
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import io.ktor.utils.io.jvm.javaio.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.io.readByteArray
+import java.io.FileOutputStream
+import kotlin.io.use
 
 const val debug = true
 
@@ -45,6 +57,30 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.OK, mapOf(
                         "username" to session.username
                     ))
+                }
+            }
+
+            get("/homepets") {
+                if (debug) println("solicitação homepets")
+                val session = call.sessions.get<UserSession>()
+                if(session == null) {
+                    if (debug) println("não está logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden, mapOf(
+                            "username" to ""
+                        )
+                    )
+                } else {
+                    val uid = session.id
+                    val user = getUserByID(uid)
+                    val city = user?.address?.localidade
+
+                    println("Query PETs por cidade")
+                    val petCityList = getPetByCity(city)
+                    val petCityJson = Json.encodeToString(petCityList)
+                    println(petCityJson)
+
+                    call.respond(HttpStatusCode.OK, petCityJson)
                 }
             }
 
@@ -158,7 +194,7 @@ fun Application.configureRouting() {
                             birthday = birthdate,
                             email = email,
                             phone = phone,
-                            description = null
+                            description = null,
                         )
                     )
                 ) {

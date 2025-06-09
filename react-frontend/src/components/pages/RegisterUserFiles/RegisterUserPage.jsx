@@ -7,6 +7,7 @@ import Phone from "./Components/Phone.jsx";
 import Email from "./Components/Email.jsx";
 import Username from "./Components/Username.jsx";
 import Password from "./Components/Password.jsx";
+import ProfilePicture from "./Components/ProfilePicture.jsx";
 import Cep from "./Components/Cep.jsx";
 import UseTerms from "./Components/UseTerms.jsx";
 import clouds from "../../../assets/clouds.png";
@@ -77,6 +78,7 @@ function RegisterUserPage() {
                         <Email value={formData.email} onChange={handleChange}/>
                         <Username value={formData.username} onChange={handleChange}/>
                         <Password value={formData.password} onChange={handleChange}/>
+                        <ProfilePicture/>
                     </div>
                     <Cep value={formData.cep} onChange={handleChange}/>
                     <UseTerms/>

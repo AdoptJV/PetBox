@@ -1,5 +1,4 @@
 import Bars from "../../general/Bars.jsx";
-import PostCard from "./Components/PostCard.jsx";
 import HorizontalList from "../../general/HorizontalList.jsx";
 import FeedScroll from "./Components/FeedScroll.jsx";
 import WritePost from "../../general/WritePost.jsx";

@@ -21,7 +21,7 @@ function Navbar({ collapsed, toggleSidebar }) {
                  width: "100%",
                  backgroundColor: "#a1c8ff",
                  fontWeight: "bold"
-        }}>
+             }}>
             <button onClick={toggleSidebar} className="navbar-toggler mx-2" type="button">
                 <span className="navbar-toggler-icon"></span>
             </button>

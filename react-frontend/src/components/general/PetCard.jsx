@@ -1,18 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import petboxLogo from "../../assets/placeholderPost.jpg"
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
-function PetCard() {
-    //++++++++++++++++++++++++ MUDANÇA DE PÁGINA ++++++++++++++++++++++++//
-
+function PetCard({ petData }) {
     const navigate = useNavigate();
+
     const handleCardClick = () => {
         // Navigate to pet details page with pet ID
-        navigate("/pets");
+        navigate(`/pets/${petData.id}`);
     };
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-
-    //++++++++++++++++++++++ PASSAR MOUSE POR CIMA ++++++++++++++++++++++//
 
     const [hovered, setHovered] = useState(false)
 
@@ -23,25 +18,7 @@ function PetCard() {
         width: "15rem",
         boxShadow: hovered ? "0 4px 8px rgba(0,0,0,0.1)" : "0"
     };
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
-    //+++++++++++++++++++++ PUXAR DO BANCO DE DADOS +++++++++++++++++++++//
-
-    const [petName, setPetName] = useState("");
-    const [petURL, setPetURL] = useState("");
-    const [petDesc, setPetDesc] = useState("");
-
-    useEffect(() => {
-        fetch("http://localhost:8080/api/petcard", {
-            credentials: "include",
-        })
-            .then(res => res.json())
-            .then(data => setPetName(data.petname))
-            .then(data => setPetURL(data.peturl))
-            .then(data => setPetDesc(data.petdesc))
-            .catch(() => setPetName(""));
-    }, []);
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
     return (
         <div onClick={handleCardClick}
@@ -49,12 +26,11 @@ function PetCard() {
              onMouseLeave={() => setHovered(false)}
              className="card"
              style={hoverStyle}>
-            <h6 className="mx-2 my-2 text-center">Pepeu</h6>
-            <img src={petboxLogo} alt="placeholder" style={{objectFit: "cover"}}/>
+            <h6 className="mx-2 my-2 text-center">{petData.name}</h6>
+            <p className="mx-2 my-2 text-center">{petData.species}</p>
+            <img src={`http://localhost:8080/api/userpictures/${petData.url}`} alt={`Imagem de ${petData.id}`} className="text-center" style={{objectFit: "cover"}}/>
             <div className="card-body">
-                <p className="card-text">
-                    Esse gatinho azul foi abandonado na rua Augusta. Muito carinhoso e precisa de um lar.
-                </p>
+                <p className="card-text">{petData.description}</p>
             </div>
         </div>
     )

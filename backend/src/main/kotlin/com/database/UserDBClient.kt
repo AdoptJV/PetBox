@@ -21,8 +21,8 @@ fun insertUser(user: User): Boolean {
     val sql = """
       INSERT INTO USERS
         (username, name, birthday, email, password,
-         photoURL, phone, CEP, description, userType, joined)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         photoURL, phone, CEP, description, userType, joined, city)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """.trimIndent()
     val stmt = connection.prepareStatement(sql)
     try {
@@ -37,6 +37,7 @@ fun insertUser(user: User): Boolean {
         stmt.setString(9, user.description)
         stmt.setString(10, if (user.usrType == UserType.ONG) "ONG" else "REGULAR")
         stmt.setString(11, user.joined.toString())
+        stmt.setString(12, user.address.localidade)
 
         return stmt.executeUpdate() == 1 // verifica se uma linha foi atualizada no banco de dados
     } catch (e: SQLException) {

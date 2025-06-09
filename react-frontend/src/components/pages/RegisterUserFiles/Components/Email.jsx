@@ -31,7 +31,7 @@ const Email = ({ value, onChange }) => {
         : `form-control rounded-4 ${error ? "is-invalid" : "is-valid"}`;
 
     return (
-        <div className="col-md-6">
+        <div className="col-md-6 mx-2 my-2">
             <label htmlFor="email" className="form-label">Email</label>
             <input
                 id="email"

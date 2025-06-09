@@ -25,7 +25,7 @@ const UsernameForm = ({ value, onChange }) => {
         : `form-control rounded-4 ${error ? "is-invalid" : "is-valid"}`;
 
     return (
-        <div className="col-md-5 mb-3">
+        <div className="col-md-5 mx-2 my-2">
             <label htmlFor="inputUsername" className="form-label">Nome de usuário</label>
             <input
                 name="username"

@@ -4,6 +4,7 @@ import com.jvdev.com.models.Sex
 import java.sql.Date
 import java.sql.SQLException
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /*
  * Funções relacionadas a manipulação de dados na base da dados dos pets
@@ -57,4 +58,48 @@ fun queryAllPets(): List<Pet> {
          )
     }
     return pets
+}
+
+suspend fun getPetByID(id: Int): Pet? {
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+    try {
+        val sql = """
+        SELECT * FROM PETS WHERE id = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+
+        statement.setInt(1, id)
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            val name = resultSet.getString("name")
+            val species = resultSet.getString("species")
+            val sexB = resultSet.getBoolean("sex")
+            val age = resultSet.getInt("age")
+            val castrated = resultSet.getBoolean("castrated")
+            val photoURL = resultSet.getString("photoURL")
+            val owner = resultSet.getInt("owner")
+            val sex = if(sexB) Sex.MALE else Sex.FEMALE
+
+            return Pet(
+                id = id,
+                species = species,
+                sex = sex,
+                age = age,
+                castrated = castrated,
+                photoUrl = photoURL,
+                owner = owner,
+                name = name
+            )
+        }
+        else return null
+
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+        return null
+    }
+    finally {
+        connection.close()
+    }
 }

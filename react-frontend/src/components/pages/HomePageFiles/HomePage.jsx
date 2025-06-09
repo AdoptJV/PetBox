@@ -2,6 +2,7 @@ import Bars from "../../general/Bars.jsx";
 import PostCard from "./Components/PostCard.jsx";
 import HorizontalList from "../../general/HorizontalList.jsx";
 import FeedScroll from "./Components/FeedScroll.jsx";
+import WritePost from "../../general/WritePost.jsx";
 
 function HomePage() {
 
@@ -14,6 +15,7 @@ function HomePage() {
                 <h5 className="mx-3 my-3 text-center">Posts</h5>
                 <FeedScroll/>
             </Bars>
+            <WritePost/>
         </div>
     )
 }

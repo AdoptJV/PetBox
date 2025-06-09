@@ -1,5 +1,5 @@
 import petboxLogo from "../../assets/smallLogo.svg"
-import userIcon from "../../assets/person-circle.svg"
+import userIcon from "../../assets/person-circle-white.svg"
 import { useEffect, useState } from "react";
 
 function Navbar({ collapsed, toggleSidebar }) {

@@ -2,7 +2,7 @@ import React from "react";
 
 const UseTerms = () => {
     return (
-        <div className="accordion accordion-flush mb-3 border border-2 border-secondary rounded-1" id="accordionFlushExample">
+        <div className="accordion accordion-flush my-2 rounded-1" id="accordionFlushExample">
             <div className="accordion-item">
                 <h2 className="accordion-header">
                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -22,7 +22,7 @@ const UseTerms = () => {
                             que possam comprometer sua integridade ou a de terceiros.
                         </p>
                         <p>
-                            O uso inadequado da plataforma pode resultar na suspensão ou remoção da sua conta.
+                            O uso inadequate da plataforma pode resultar na suspensão ou remoção da sua conta.
                             Não nos responsabilizamos por perdas de dados, interrupções de serviço ou falhas causadas
                             por terceiros.
                         </p>

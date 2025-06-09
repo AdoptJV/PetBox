@@ -63,7 +63,6 @@ fun Application.configureRouting() {
                 }
             }
 
-
             get("/check/username/{username}"){
                 if (debug) println("verificação de usuario")
                 val username = call.parameters["username"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid username")

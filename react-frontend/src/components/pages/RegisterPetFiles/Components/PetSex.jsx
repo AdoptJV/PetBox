@@ -1,0 +1,26 @@
+import React from "react";
+
+function PetSex({value, onChange}) {
+
+    function handleChange(e) {
+        onChange(e);
+    }
+
+    return (
+        <div className="col-md-4">
+            <label className="form-label mb-2">Sexo do Pet</label>
+            <select
+                className="form-select"
+                name="sex"
+                value={value}
+                onChange={handleChange}
+            >
+                <option defaultValue>Selecione</option>
+                <option value="MALE">Macho</option>
+                <option value="FEMALE">Fêmea</option>
+            </select>
+        </div>
+    );
+}
+
+export default PetSex;

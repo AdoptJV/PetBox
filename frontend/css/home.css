@@ -20,8 +20,9 @@ body {
 
 .titlebox {
     color: #63452c;
+    background-color: #c3c3c3;
 
-    width: 100%;
+    width: 50%;
 
     font-size: 30px;
 
@@ -71,46 +72,4 @@ body {
     background-color: #a3754f;
     box-shadow: 0 0 #000;
     transform: translate(3px, 5px);
-}
-
-.rightcontent{
-    flex: 1;
-    display: grid;
-    place-content: center;
-    gap: 20px;
-}
-
-.innerright{
-    height: 100%;
-    border: 10px solid transparent;
-
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.options {
-    background-color: #bd8b62;
-    padding: 20px;
-    flex-grow: 1;
-
-    /*border: 3px solid #63452c;*/
-    border-radius: 10px;
-
-    box-shadow: rgba(0,0,0,0.4) 3px 3px;
-
-    color: #63452c;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    gap: 20px;
-    text-align: center;
-    height: 50%;
-}
-
-.options a,
-.options form {
-    display: inline-block;
 }

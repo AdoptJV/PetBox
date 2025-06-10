@@ -3,7 +3,8 @@
   Esse projeto envolve a criação de um site cujo objetivo é facilitar o processo de adoção
 de bichinhos, tanto para ONGs quanto para usuários individuais. O objetivo é implementar uma
 interface acessível e eficiente para os usuários visando ajudar os animais desabrigados
-a encontrarem um lar.
+a encontrarem um lar. Usuários podem registrar os animais que estão sob seus cuidados para que
+outras pessoas possam encontrá-los e potencialmente adotá-los.
 
   Criaremos um sistema de busca com filtros, um algoritmo de recomendação baseado
 na localização de cada usuário e um quadro de postagens, onde usuários podem publicar

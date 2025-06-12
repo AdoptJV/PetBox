@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+/* menu de login */
+
 function LandingMenu() {
     const [formData, setFormData] = useState({
         username: "",
@@ -8,6 +10,7 @@ function LandingMenu() {
     });
 
     const [response, setResponse] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -20,32 +23,45 @@ function LandingMenu() {
 
     const redirect = (e) => {
         e.preventDefault();
-        navigate("/register");
+        navigate("/register"); // redireciona para a pagina de registro de usuario
+    }
+
+    async function loginUser(username, password) {
+        try {
+            const response = await fetch("http://localhost:8080/api/login-user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) { // status 200: sucesso
+                const data = await response.json();
+                console.log("Login OK:", data.message);
+                window.location.href = "/home"; // redireciona
+            } else if (response.status === 401) { // senha incorreta
+                const data = await response.json();
+                console.error("Erro de autenticação:", data.message);
+                setError(data.message);
+            } else if (response.status === 404) { // usuário não encontrado
+                const data = await response.json();
+                console.error("Usuário não encontrado:", data.message);
+                setError(data.message);
+            } else { // outro erro
+                console.error("Erro inesperado:", response.status);
+            }
+
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+        }
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 🔐 Prevent full page reload
+        e.preventDefault();
         console.log("Form submitted:", formData);
-
-        try {
-            const res = await fetch("http://localhost:8080/api/login-user", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify(formData), // 👍 sending full formData
-            });
-
-            const data = await res.json();
-            if (data.redirect) {
-                navigate(data.redirect);
-            }
-            setResponse(`Server echoed: ${data.echo}`);
-        } catch (err) {
-            console.error(err);
-            setResponse("Error sending message");
-        }
+            await loginUser(formData.username, formData.password);
     };
 
     return (
@@ -101,9 +117,9 @@ function LandingMenu() {
                             Registre-se
                         </button>
                     </div>
-                    {response && (
+                    {error && (
                         <div className="alert alert-info mt-3" role="alert">
-                            {response}
+                            {error}
                         </div>
                     )}
                 </div>

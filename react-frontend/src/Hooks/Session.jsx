@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+/* verifica se o usuario tem esta logado utilizando cookies e o checker do backend*/
+
 export default function useSession() {
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);

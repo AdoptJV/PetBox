@@ -1,16 +1,16 @@
 import {Navigate} from 'react-router-dom';
 import useSession from "./Hooks/Session.jsx";
 
-function ProtectedRoutes({children}) {
+function ProtectedRoute({children}) {
     const {isLoading, isLoggedIn} = useSession();
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return <div>Carregando...</div>;
 
     if (!isLoggedIn) {
-        return <Navigate to='/login'/>;
+        return <Navigate to='/'/>;
     }
 
     return children;
 }
 
-export default ProtectedRoutes;
+export default ProtectedRoute;

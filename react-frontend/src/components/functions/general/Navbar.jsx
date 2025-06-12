@@ -1,29 +1,25 @@
 import petboxLogo from "../../../assets/smallLogo.svg"
 import userIcon from "../../../assets/person-circle.svg"
 import Sidebar from "./Sidebar.jsx";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
 function Navbar() {
     const [collapsed, setCollapsed] = useState(false);
     const toggleSidebar = () => setCollapsed(!collapsed);
-    const [username, setUsername] = useState("");
 
+    function getUsernameFromCookie() {
+        const session = Cookies.get("user_session")
+        if (!session) return null
 
-    useEffect(() => {
-        fetch("http://localhost:8080/api/home", {
-            credentials: "include",
-        })
-            .then(res => {
-                return res.json();
-            })
-            .then(data => {
-                console.log(data);
-                setUsername(data.username);
-            })
-            .catch(() => {
-                setUsername("");
-            });
-    }, []);
+        try {
+            const obj = JSON.parse(session)
+            return obj.username
+        } catch {
+            return null
+        }
+    }
+
 
     return (
         <>
@@ -34,7 +30,7 @@ function Navbar() {
 
                 <a className="navbar-brand" href="/profile">
                     <img src={userIcon} width="35" height="35" className="mx-3 d-inline-block align-top" alt="Foto do usuário"/>
-                    {username}
+                    {getUsernameFromCookie()}
                 </a>
 
                 <a className="navbar-brand ms-auto" href="/home">

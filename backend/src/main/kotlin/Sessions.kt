@@ -8,7 +8,7 @@ fun Application.configureSessions() {
     install(Sessions) {
         cookie<UserSession>("user_session") {
             cookie.path = "/" // cookie disponível em todo o site
-            cookie.httpOnly = true // protege contra acesso via JavaScript (XSS)
+            cookie.httpOnly = false
             cookie.extensions["SameSite"] = "lax" // permite navegação com links externos
             // cookie.secure = true // ative isso se estiver usando HTTPS
         }

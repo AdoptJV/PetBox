@@ -1,0 +1,1 @@
+val messageHistory = mutableListOf<Message>()

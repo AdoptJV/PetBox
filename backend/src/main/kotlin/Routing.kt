@@ -1,4 +1,5 @@
 package com.jvdev
+import Message
 import com.jvdev.com.ChatServer.ChatServer
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -14,6 +15,8 @@ import com.jvdev.com.database.*
 import com.jvdev.com.models.User
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.serialization.json.Json
+import messageHistory
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
@@ -35,6 +38,14 @@ fun Application.configureRouting() {
                 call.respondText("O servidor do PetBox está rodando!")
             }
 
+            get("/all-users") {
+                val exclude = call.request.queryParameters["exclude"]
+                val all = getAllUsers()
+                val filtered = if (exclude != null) all.filter { it != exclude } else all
+                call.respond(filtered)
+            }
+
+
             get("/check/user") {
                 val session = call.sessions.get<UserSession>()
                 if (session == null) {
@@ -46,6 +57,51 @@ fun Application.configureRouting() {
                 }
             }
 
+            get("/messages") {
+                val from = call.request.queryParameters["from"]
+                val to = call.request.queryParameters["to"]
+
+                if (from == null || to == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Parâmetros 'from' e 'to' são obrigatórios.")
+                    return@get
+                }
+
+                val history = getMessages(from, to)
+
+                call.respond(history)
+            }
+
+            webSocket("/chat") {
+                val username = call.request.queryParameters["username"]
+                if (username == null) {
+                    close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Nome de usuário ausente."))
+                    return@webSocket
+                }
+
+                ChatServer.register(this, username)
+
+                try {
+                    for (frame in incoming) {
+                        if (frame is Frame.Text) {
+                            val text = frame.readText()
+                            val message = Json.decodeFromString<Message>(text)
+
+                            // Salva no histórico em memória (ou banco se quiser)
+                            saveMessage(message)
+
+                            // Envia para ambos os envolvidos
+                            ChatServer.broadcast(message)
+                        }
+                    }
+                } catch (e: Exception) {
+                    println("Erro WebSocket: ${e.message}")
+                } finally {
+                    ChatServer.unregister(this)
+                }
+            }
+
+
+
             get("/cep-info/{cep}") {
                 if (debug) println("processamento de cep")
                 val cep = call.parameters["cep"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid CEP")
@@ -54,17 +110,19 @@ fun Application.configureRouting() {
                     val address = buscarEndereco(cep)
                     if (debug) println("endereco obtido: $address")
                     call.respond(address)
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     if (debug) println("erro ao obter o endereço")
                     call.respond(HttpStatusCode.InternalServerError, "Failed to retrieve address")
                 }
             }
 
 
-            get("/check/username/{username}"){
+            get("/check/username/{username}") {
                 if (debug) println("verificação de usuario")
-                val username = call.parameters["username"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid username")
+                val username = call.parameters["username"] ?: return@get call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Invalid username"
+                )
                 if (debug) println("usuario solicitado: $username")
                 val check = checkUsername(username)
                 if (debug) println("já existe? $check")
@@ -73,7 +131,8 @@ fun Application.configureRouting() {
 
             get("/check/email/{email}") {
                 if (debug) println("verificação de email")
-                val email = call.parameters["email"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid username")
+                val email =
+                    call.parameters["email"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid username")
                 if (debug) println("email solicitado: $email")
                 val check = checkEmail(email)
                 if (debug) println("já existe? $check")
@@ -84,8 +143,10 @@ fun Application.configureRouting() {
                 if (debug) println("requisição de login")
 
                 val request = call.receive<Map<String, String>>()
-                val username = request["username"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Username required")
-                val password = request["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Password required")
+                val username =
+                    request["username"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Username required")
+                val password =
+                    request["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Password required")
 
                 val user = getUserByUsername(username)
 
@@ -105,9 +166,9 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.OK, mapOf("message" to "Login realizado com sucesso"))
             }
 
-            post("/logout"){
+            post("/logout") {
                 call.sessions.clear<UserSession>()
-                call.respond(HttpStatusCode.OK, mapOf( "message" to "Logout successful"))
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Logout successful"))
             }
 
             post("/register-user") {
@@ -115,13 +176,34 @@ fun Application.configureRouting() {
                 val parameters = call.receive<Map<String, String>>()
                 if (debug) println("parametros $parameters")
 
-                val username = parameters["username"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "username ausente"))
-                val name = parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "nome ausente"))
-                val password = parameters["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "senha ausente"))
-                val email = parameters["email"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "email ausente"))
-                val birthdateRaw = parameters["birthdate"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "data de nascimento ausente"))
-                val phone = parameters["phone"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "telefone ausente"))
-                val cep = parameters["cep"] ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "CEP ausente"))
+                val username = parameters["username"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "username ausente")
+                )
+                val name = parameters["name"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "nome ausente")
+                )
+                val password = parameters["password"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "senha ausente")
+                )
+                val email = parameters["email"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "email ausente")
+                )
+                val birthdateRaw = parameters["birthdate"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "data de nascimento ausente")
+                )
+                val phone = parameters["phone"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "telefone ausente")
+                )
+                val cep = parameters["cep"] ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "CEP ausente")
+                )
 
                 val birthdate: LocalDate = try {
                     OffsetDateTime.parse(birthdateRaw).toLocalDate()
@@ -129,7 +211,10 @@ fun Application.configureRouting() {
                     try {
                         LocalDate.parse(birthdateRaw.substring(0, 10))
                     } catch (e: Exception) {
-                        return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "Data de nascimento inválida"))
+                        return@post call.respond(
+                            HttpStatusCode.BadRequest,
+                            mapOf("message" to "Data de nascimento inválida")
+                        )
                     }
                 }
 
@@ -154,25 +239,6 @@ fun Application.configureRouting() {
                 }
             }
 
-
-            /* implementa o chat usando um websocket */
-            webSocket("/chat") {
-                    val username = call.request.queryParameters["username"] ?: "Anon"
-
-                    ChatServer.register(this, username)
-
-                    try {
-                        for (frame in incoming) {
-                            if (frame is Frame.Text) {
-                                val text = frame.readText()
-                                ChatServer.broadcast("$username: $text")
-                            }
-                        }
-                    } finally {
-                        ChatServer.unregister(this)
-                    }
-                }
-            }
-
+        }
     }
 }

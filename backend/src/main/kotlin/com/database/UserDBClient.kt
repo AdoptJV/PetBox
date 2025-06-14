@@ -162,3 +162,27 @@ suspend fun getUserByUsername(username: String): User? {
         connection.close()
     }
 }
+
+fun getAllUsers(): List<String> {
+    val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
+    val users = mutableListOf<String>()
+    try {
+        val sql = """
+            SELECT * FROM USERS
+        """.trimIndent()
+        val statement = connection.prepareStatement(sql)
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            val username = resultSet.getString("username")
+            users.add(username)
+        }
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+    }
+    finally {
+        connection.close()
+    }
+    return users
+}

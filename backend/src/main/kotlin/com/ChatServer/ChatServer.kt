@@ -1,28 +1,36 @@
 package com.jvdev.com.ChatServer
 
-import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import java.util.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import Message
 
 object ChatServer {
+    private val clients = mutableMapOf<String, WebSocketSession>()
 
-    // Lista de conexões WebSocket ativas
-    private val clients: MutableSet<DefaultWebSocketServerSession> =
-        Collections.synchronizedSet(mutableSetOf<DefaultWebSocketServerSession>())
-
-
-    suspend fun register(session: DefaultWebSocketServerSession, username: String) {
-        clients.add(session)
-        broadcast("$username entrou no chat")
+    fun register(session: WebSocketSession, username: String) {
+        clients[username] = session
+        println("Conectado: $username")
     }
 
-    fun unregister(session: DefaultWebSocketServerSession) {
-        clients.remove(session)
+    suspend fun broadcast(message: Message) {
+        val jsonMessage = Json.encodeToString(message)
+
+        // Envia para o remetente e o destinatário
+        listOfNotNull(clients[message.from], clients[message.to]).forEach { client ->
+            try {
+                client.send(Frame.Text(jsonMessage))
+            } catch (e: Exception) {
+                println("Erro ao enviar mensagem para ${message.from} ou ${message.to}: ${e.message}")
+            }
+        }
     }
 
-    suspend fun broadcast(message: String) {
-        clients.forEach {
-            it.send(Frame.Text(message)) // envia para cada usuário conectado }
+    fun unregister(session: WebSocketSession) {
+        val user = clients.entries.find { it.value == session }?.key
+        if (user != null) {
+            clients.remove(user)
+            println("Desconectado: $user")
         }
     }
 }

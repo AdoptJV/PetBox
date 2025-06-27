@@ -30,7 +30,7 @@ const Birthdate = ({ value, onChange }) => {
     };
 
     return (
-        <div className="col-md-3 mb-3">
+        <div className="col-md-3 mx-2 my-2">
             <label htmlFor="birthdate" className="form-label">Data de Nascimento</label>
             <DatePicker
                 id="birthdate"

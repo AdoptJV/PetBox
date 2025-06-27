@@ -17,8 +17,20 @@ import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.serialization.json.Json
 import messageHistory
+import io.ktor.http.content.*
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import io.ktor.utils.io.jvm.javaio.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.io.readByteArray
+import java.io.FileOutputStream
+import kotlin.io.use
 
 const val debug = true
 
@@ -102,6 +114,30 @@ fun Application.configureRouting() {
 
 
 
+            get("/homepets") {
+                if (debug) println("solicitação homepets")
+                val session = call.sessions.get<UserSession>()
+                if(session == null) {
+                    if (debug) println("não está logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden, mapOf(
+                            "username" to ""
+                        )
+                    )
+                } else {
+                    val uid = session.id
+                    val user = getUserByID(uid)
+                    val city = user?.address?.localidade
+
+                    println("Query PETs por cidade")
+                    val petCityList = getPetByCity(city)
+                    val petCityJson = Json.encodeToString(petCityList)
+                    println(petCityJson)
+
+                    call.respond(HttpStatusCode.OK, petCityJson)
+                }
+            }
+
             get("/cep-info/{cep}") {
                 if (debug) println("processamento de cep")
                 val cep = call.parameters["cep"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid CEP")
@@ -139,6 +175,7 @@ fun Application.configureRouting() {
                 call.respond(mapOf("exists" to check))
             }
 
+            /* protocolos de post */
             post("/login-user") {
                 if (debug) println("requisição de login")
 
@@ -205,6 +242,7 @@ fun Application.configureRouting() {
                     mapOf("message" to "CEP ausente")
                 )
 
+                // converte a birthdate para o formato da database
                 val birthdate: LocalDate = try {
                     OffsetDateTime.parse(birthdateRaw).toLocalDate()
                 } catch (e: Exception) {
@@ -231,6 +269,20 @@ fun Application.configureRouting() {
                 )
 
                 if (insertUser(user)) {
+                if (insertUser(
+                        User(
+                            id = -1,
+                            username = username,
+                            name = name,
+                            psw = password,
+                            address = buscarEndereco(cep),
+                            birthday = birthdate,
+                            email = email,
+                            phone = phone,
+                            description = null,
+                        )
+                    )
+                ) {
                     if (debug) println("registro bem sucedido")
                     call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
                 } else {

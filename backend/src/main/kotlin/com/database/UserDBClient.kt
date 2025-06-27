@@ -21,8 +21,8 @@ fun insertUser(user: User): Boolean {
     val sql = """
       INSERT INTO USERS
         (username, name, birthday, email, password,
-         photoURL, phone, CEP, description, userType, joined)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         photoURL, phone, CEP, description, userType, joined, city)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """.trimIndent()
     val stmt = connection.prepareStatement(sql)
     try {
@@ -126,6 +126,56 @@ suspend fun getUserByUsername(username: String): User? {
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
             val id = resultSet.getInt("id")
+            val name = resultSet.getString("name")
+            val birthday = resultSet.getString("birthday")
+            val cep = resultSet.getString("CEP")
+            val password = resultSet.getString("password")
+            val email = resultSet.getString("email")
+            val phone = resultSet.getString("phone")
+            val photoURL = resultSet.getString("photoURL")
+            val userType = UserType.valueOf(resultSet.getString("userType"))
+            val joined = resultSet.getString("joined")
+            val description = resultSet.getString("description")
+            return User(
+                id = id,
+                username = username,
+                name = name,
+                psw = password,
+                address = buscarEndereco(cep),
+                birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
+                email = email,
+                phone = phone,
+                usrType = userType,
+                joined = LocalDate.parse(joined, DateTimeFormatter.ISO_DATE),
+                pfpUrl = photoURL,
+                description = description
+            )
+        }
+        else return null
+
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+        return null
+    }
+    finally {
+        connection.close()
+    }
+}
+
+suspend fun getUserByID(id: Int): User? {
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+    try {
+        val sql = """
+        SELECT * FROM USERS WHERE id = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+
+        statement.setInt(1, id)
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            val username = resultSet.getString("username")
             val name = resultSet.getString("name")
             val birthday = resultSet.getString("birthday")
             val cep = resultSet.getString("CEP")

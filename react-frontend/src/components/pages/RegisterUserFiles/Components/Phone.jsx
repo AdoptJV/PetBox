@@ -18,7 +18,7 @@ const Phone = ({ value, onChange }) => {
         : `form-control rounded-4 ${error ? "is-invalid" : "is-valid"}`;
 
     return (
-        <div className="col-md-4">
+        <div className="col-md-4 mx-2 my-2">
             <label htmlFor="inputPhone" className="form-label">Telefone</label>
             <input
                 name="phone"

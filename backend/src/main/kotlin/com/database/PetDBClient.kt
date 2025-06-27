@@ -4,6 +4,7 @@ import com.jvdev.com.models.Sex
 import java.sql.Date
 import java.sql.SQLException
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /*
  * Funções relacionadas a manipulação de dados na base da dados dos pets
@@ -50,11 +51,102 @@ fun queryAllPets(): List<Pet> {
              species = resultSet.getString("specie"),
              name = resultSet.getString("name"),
              age = resultSet.getInt("age"),
-             photoUrl = resultSet.getString("photoUrl"),
+             photoUrl = resultSet.getString("photoURL"),
+             description = resultSet.getString("description"),
              castrated = resultSet.getBoolean("castrated"),
              owner = resultSet.getInt("owner"),
              sex = Sex.valueOf(resultSet.getString("sex")))
          )
     }
     return pets
+}
+
+suspend fun getPetByCity(city: String?): MutableList<Map<String, String>>? {
+    if(city == null) return null
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+    try {
+        val sql = """
+        SELECT PETS.name, PETS.species, PETS.description, PETS.photoURL, PETS.id
+        FROM PETS
+        INNER JOIN USERS ON PETS.owner=USERS.id
+        WHERE USERS.city LIKE ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+        statement.setString(1, city)
+
+        val resultSet = statement.executeQuery()
+
+        val returnList : MutableList<Map<String, String>> = mutableListOf()
+        while (resultSet.next()) {
+            val name = resultSet.getString("name")
+            val id = resultSet.getInt("id")
+            val species = resultSet.getString("species")
+            val description = resultSet.getString("description")
+            val photoURL = resultSet.getString("photoURL")
+            returnList.add(mapOf(
+                "name" to name,
+                "species" to species,
+                "description" to description,
+                "url" to photoURL,
+                "id" to id.toString()
+            ))
+
+        }
+        if(returnList.isEmpty()) return null
+        return returnList
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+        return null
+    }
+    finally {
+        connection.close()
+    }
+}
+
+suspend fun getPetByID(id: Int): Pet? {
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+    try {
+        val sql = """
+        SELECT * FROM PETS WHERE id = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+
+        statement.setInt(1, id)
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            val name = resultSet.getString("name")
+            val species = resultSet.getString("species")
+            val sexB = resultSet.getBoolean("sex")
+            val age = resultSet.getInt("age")
+            val castrated = resultSet.getBoolean("castrated")
+            val photoURL = resultSet.getString("photoURL")
+            val owner = resultSet.getInt("owner")
+            val sex = if(sexB) Sex.MALE else Sex.FEMALE
+            val description = resultSet.getString("description")
+
+            return Pet(
+                id = id,
+                species = species,
+                sex = sex,
+                age = age,
+                castrated = castrated,
+                photoUrl = photoURL,
+                owner = owner,
+                name = name,
+                description = description
+            )
+        }
+        else return null
+
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+        return null
+    }
+    finally {
+        connection.close()
+    }
 }

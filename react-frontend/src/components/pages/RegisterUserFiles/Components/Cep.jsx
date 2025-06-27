@@ -27,41 +27,42 @@ const Cep = ({ value, onChange }) => {
     }, [value]);
 
     return (
-        <div className="col-md-4">
-            <label htmlFor="cep" className="form-label">CEP</label>
-            <input
-                id="cep"
-                name="cep"
-                type="text"
-                maxLength={9}
-                className={`form-control rounded-4 ${error ? "is-invalid" : ""}`}
-                placeholder="Digite o CEP"
-                value={value}
-                onChange={onChange}
-            />
-            {error && <div className="invalid-feedback d-block">{error}</div>}
-
+        <>
+            <div className="mx-2 my-2 col-md-5">
+                <label htmlFor="cep" className="form-label">CEP</label>
+                <input
+                    id="cep"
+                    name="cep"
+                    type="text"
+                    maxLength={9}
+                    className={`form-control rounded-4 ${error ? "is-invalid" : ""}`}
+                    placeholder="Digite o CEP"
+                    value={value}
+                    onChange={onChange}
+                />
+                {error && <div className="invalid-feedback d-block">{error}</div>}
+            </div>
             {endereco && (
-                <>
-                    <div className="mt-2">
+                <div className="d-flex flex-row justify-content-start flex-wrap">
+                    <div className="mx-2 my-2 col-md-5">
                         <label className="form-label">Logradouro</label>
-                        <input className="form-control" readOnly value={endereco.logradouro} />
+                        <input className="form-control rounded-4" readOnly value={endereco.logradouro} />
                     </div>
-                    <div className="mt-2">
+                    <div className="mx-2 my-2 col-md-5">
                         <label className="form-label">Bairro</label>
-                        <input className="form-control" readOnly value={endereco.bairro} />
+                        <input className="form-control rounded-4" readOnly value={endereco.bairro} />
                     </div>
-                    <div className="mt-2">
+                    <div className="mx-2 my-2 col-md-5">
                         <label className="form-label">Cidade</label>
-                        <input className="form-control" readOnly value={endereco.localidade} />
+                        <input className="form-control rounded-4" readOnly value={endereco.localidade} />
                     </div>
-                    <div className="mt-2">
+                    <div className="mx-2 my-2 col-md-5">
                         <label className="form-label">Estado</label>
-                        <input className="form-control" readOnly value={endereco.uf} />
+                        <input className="form-control rounded-4" readOnly value={endereco.uf} />
                     </div>
-                </>
+                </div>
             )}
-        </div>
+        </>
     );
 };
 

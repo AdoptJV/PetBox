@@ -35,8 +35,8 @@ const Password = ({ value, onChange }) => {
             : `form-control rounded-4 ${error ? "is-invalid" : "is-valid"}`;
 
     return (
-        <div className="row mb-3">
-            <div className="col-md-4">
+        <div className="row">
+            <div className="mx-2 my-2 col-md-4">
                 <label htmlFor="inputPassword" className="form-label">
                     Senha
                 </label>
@@ -57,7 +57,7 @@ const Password = ({ value, onChange }) => {
                 )}
             </div>
 
-            <div className="col-md-4">
+            <div className="mx-2 my-2 col-md-4">
                 <label htmlFor="inputPasswordConfirm" className="form-label">
                     Confirme a Senha
                 </label>

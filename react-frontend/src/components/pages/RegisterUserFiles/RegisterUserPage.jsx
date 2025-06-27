@@ -7,8 +7,10 @@ import Phone from "./Components/Phone.jsx";
 import Email from "./Components/Email.jsx";
 import Username from "./Components/Username.jsx";
 import Password from "./Components/Password.jsx";
+import ProfilePicture from "./Components/ProfilePicture.jsx";
 import Cep from "./Components/Cep.jsx";
 import UseTerms from "./Components/UseTerms.jsx";
+import clouds from "../../../assets/clouds.png";
 
 function RegisterUserPage() {
     const [formData, setFormData] = useState({
@@ -55,46 +57,49 @@ function RegisterUserPage() {
     };
 
     return (
-        <form className="container mt-5" onSubmit={handleSubmit}>
-            <div className="row mb-3">
-                <Name value={formData.name} onChange={handleChange} />
-                <LastName value={formData.lastName} onChange={handleChange} />
+        <div className="d-flex justify-content-center" style={{
+            backgroundImage: `url(${clouds})`,
+            backgroundColor: "#a1c8ff",
+            minHeight: "100vh",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+        }}>
+            <div className="my-5 py-2 w-50 card shadow rounded-4" style={{ backgroundColor: "#f3f3f3" }}>
+                <form className="container" onSubmit={handleSubmit}>
+                    <div className="d-flex flex-row justify-content-start flex-wrap">
+                        <Name value={formData.name} onChange={handleChange}/>
+                        <LastName value={formData.lastName} onChange={handleChange}/>
+                        <Birthdate value={formData.birthdate} onChange={handleChange}/>
+                        <Phone value={formData.phone} onChange={handleChange}/>
+                        <Email value={formData.email} onChange={handleChange}/>
+                        <Username value={formData.username} onChange={handleChange}/>
+                        <Password value={formData.password} onChange={handleChange}/>
+                        <ProfilePicture/>
+                    </div>
+                    <Cep value={formData.cep} onChange={handleChange}/>
+                    <UseTerms/>
+
+                    <div className="form-check my-2">
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="Termos"
+                            name="terms"
+                            checked={formData.terms}
+                            onChange={handleChange}
+                        />
+                        <label className="form-check-label" htmlFor="Termos">
+                            Aceito os termos
+                        </label>
+                    </div>
+                    <div className="my-3 d-flex justify-content-center">
+                        <button type="submit" className="btn btn-primary">Registrar</button>
+                    </div>
+                    {response && <div className="alert alert-info mt-3">{response}</div>}
+                </form>
             </div>
-            <div className="row mb-3">
-                <Birthdate value={formData.birthdate} onChange={handleChange} />
-                <Phone value={formData.phone} onChange={handleChange} />
-            </div>
-            <div className="row mb-3">
-                <Email value={formData.email} onChange={handleChange} />
-            </div>
-            <div className="row mb-3">
-                <Username value={formData.username} onChange={handleChange} />
-                <Password value={formData.password} onChange={handleChange} />
-            </div>
-            <div className="row mb-3">
-                <Cep value={formData.cep} onChange={handleChange} />
-            </div>
-            <div className="row mb-3">
-                <UseTerms />
-                <div className="form-check">
-                    <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="Termos"
-                        name="terms"
-                        checked={formData.terms}
-                        onChange={handleChange}
-                    />
-                    <label className="form-check-label" htmlFor="Termos">
-                        Aceito os termos
-                    </label>
-                </div>
-            </div>
-            <button type="submit" className="btn btn-primary">
-                Registrar
-            </button>
-            {response && <div className="alert alert-info mt-3">{response}</div>}
-        </form>
+        </div>
     );
 }
 

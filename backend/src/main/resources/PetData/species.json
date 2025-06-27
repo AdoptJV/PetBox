@@ -3,7 +3,7 @@
     {
       "id": 1,
       "nome": "cachorro",
-      "racas": [
+      "tipos": [
         "pequeno porte",
         "médio porte",
         "grande porte"
@@ -12,7 +12,7 @@
     {
       "id": 2,
       "nome": "gato",
-      "racas": [
+      "tipos": [
         "pelo curto",
         "pelo médio",
         "pelo longo",
@@ -22,12 +22,12 @@
     {
       "id": 3,
       "nome": "coelho",
-      "racas": []
+      "tipos": []
     },
     {
       "id": 4,
       "nome": "roedor",
-      "racas": [
+      "tipos": [
         "porquinho-da-índia",
         "hamster",
         "chinchila",
@@ -39,7 +39,7 @@
     {
       "id": 5,
       "nome": "pássaro",
-      "racas": [
+      "tipos": [
         "periquito",
         "papagaio",
         "calopsita",
@@ -53,7 +53,7 @@
     {
       "id": 6,
       "nome": "peixe",
-      "racas": [
+      "tipos": [
         "água doce",
         "água salgada"
       ]
@@ -61,7 +61,7 @@
     {
       "id": 7,
       "nome": "réptil",
-      "racas": [
+      "tipos": [
         "jabuti",
         "tartaruga",
         "cágado",

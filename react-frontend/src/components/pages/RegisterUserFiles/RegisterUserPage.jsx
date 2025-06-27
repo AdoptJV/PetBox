@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {redirect, useNavigate} from "react-router-dom";
 import Name from "./Components/Name.jsx";
 import LastName from "./Components/LastName.jsx";
 import Birthdate from "./Components/Birthdate.jsx";
@@ -44,16 +44,13 @@ function RegisterUserPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
-            const text = await res.text();
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch {
-                setResponse("Erro ao processar a resposta do servidor.");
-                return;
+            const data = await res.json();
+
+            if (res.ok) {
+                navigate("/");
+            } else {
+                setResponse(`Erro: ${data.message || "Problema no servidor"}`);
             }
-            if (data.redirect) navigate(data.redirect);
-            else setResponse(`Erro: ${data.message || "Problema no servidor"}`);
         } catch {
             setResponse("Erro ao enviar dados para o servidor.");
         }

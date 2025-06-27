@@ -2,6 +2,8 @@ import LandingLogo from "./Components/LandingLogo.jsx";
 import LandingMenu from "./Components/LandingMenu.jsx";
 import clouds from "../../../assets/clouds.png";
 
+/* pagina inicial*/
+
 function LandingPage() {
     return (
         <div style={{

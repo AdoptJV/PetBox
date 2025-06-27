@@ -54,6 +54,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.3.0")
     implementation("com.squareup.retrofit2:converter-gson:2.3.0")
     implementation("io.ktor:ktor-server-content-negotiation:3.1.2")
+    implementation("io.ktor:ktor-server-websockets:3.1.2")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
@@ -61,6 +62,8 @@ dependencies {
     // FreeMaker pra html dinamico
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
     implementation("io.ktor:ktor-server-freemarker:2.2.1")
+    implementation("io.ktor:ktor-server-websockets:2.3.9")
+    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 
     // Upload de imagens
     implementation("io.ktor:ktor-server-netty:$ktor_version")

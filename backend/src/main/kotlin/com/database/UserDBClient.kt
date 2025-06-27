@@ -21,8 +21,8 @@ fun insertUser(user: User): Boolean {
     val sql = """
       INSERT INTO USERS
         (username, name, birthday, email, password,
-         photoURL, phone, CEP, description, userType, joined, city)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         photoURL, phone, CEP, description, userType, joined)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """.trimIndent()
     val stmt = connection.prepareStatement(sql)
     try {
@@ -212,4 +212,28 @@ suspend fun getUserByID(id: Int): User? {
     finally {
         connection.close()
     }
+}
+
+fun getAllUsers(): List<String> {
+    val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
+    val users = mutableListOf<String>()
+    try {
+        val sql = """
+            SELECT * FROM USERS
+        """.trimIndent()
+        val statement = connection.prepareStatement(sql)
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            val username = resultSet.getString("username")
+            users.add(username)
+        }
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+    }
+    finally {
+        connection.close()
+    }
+    return users
 }

@@ -13,12 +13,12 @@ import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
 import com.jvdev.com.models.User
+import com.jvdev.com.models.Post
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.serialization.json.Json
 import messageHistory
 import io.ktor.http.content.*
-import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import io.ktor.server.engine.*
@@ -29,6 +29,8 @@ import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.readByteArray
+import kotlinx.serialization.json.*
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.FileOutputStream
 import kotlin.io.use
 
@@ -42,8 +44,6 @@ fun Application.configureRouting() {
             react("/react-frontend")
         }
         route("/api") {
-            staticFiles("/", File("$root/frontend")) // path estatico
-
             /* protocolos de get */
             get("/") {
                 if (debug) println("servidor inicializado")
@@ -67,6 +67,35 @@ fun Application.configureRouting() {
                     if (debug) println("esta logado")
                     call.respond(HttpStatusCode.OK)
                 }
+            }
+
+            get("/nav") {
+                if (debug) println("solicitação home")
+                val session = call.sessions.get<UserSession>()
+                if (session == null) {
+                    if (debug) println("não esta logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden, mapOf(
+                            "username" to ""
+                        )
+                    )
+                } else {
+                    if (debug) println("esta logado")
+                    val pfpUrl = "http://localhost:8080/pfps/${session.username}_pfp" // URL accessible from frontend
+
+                    return@get call.respond(
+                        HttpStatusCode.OK, mapOf(
+                            "username" to session.username,
+                            "pfp" to pfpUrl
+                        )
+                    )
+                }
+            }
+            static("/pfps") {
+                files("backend/src/main/resources/UserPfp")
+            }
+            static("/postimg") {
+                files("backend/src/main/resources/PostImg")
             }
 
             get("/messages") {
@@ -112,12 +141,10 @@ fun Application.configureRouting() {
                 }
             }
 
-
-
             get("/homepets") {
                 if (debug) println("solicitação homepets")
                 val session = call.sessions.get<UserSession>()
-                if(session == null) {
+                if (session == null) {
                     if (debug) println("não está logado")
                     call.respond(
                         HttpStatusCode.Forbidden, mapOf(
@@ -132,10 +159,44 @@ fun Application.configureRouting() {
                     println("Query PETs por cidade")
                     val petCityList = getPetByCity(city)
                     val petCityJson = Json.encodeToString(petCityList)
-                    println(petCityJson)
+                    if(debug) println(petCityJson)
 
                     call.respond(HttpStatusCode.OK, petCityJson)
                 }
+            }
+
+            get("/homeposts") {
+                if (debug) println("solicitação homeposts")
+                val session = call.sessions.get<UserSession>()
+                if (session == null) {
+                    if (debug) println("não está logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden, mapOf(
+                            "username" to ""
+                        )
+                    )
+                } else {
+                    println("Query Posts")
+                    val postList = queryAllPosts()
+                    val postJson = Json.encodeToString(postList)
+                    if(debug) println(postList)
+
+                    call.respond(HttpStatusCode.OK, postJson)
+                }
+            }
+
+            post("/poster") {
+                val json = call.receive<JsonObject>()
+                val userId = json["userId"]?.jsonPrimitive?.content ?: "unknown"
+
+                val username = getUserByID(userId.toInt())?.username
+
+                val response = buildJsonObject {
+                    put("userId", userId)
+                    put("username", username)
+                }
+
+                call.respond(response)
             }
 
             get("/cep-info/{cep}") {
@@ -210,44 +271,45 @@ fun Application.configureRouting() {
 
             post("/register-user") {
                 if (debug) println("registro de usuario")
-                val parameters = call.receive<Map<String, String>>()
-                if (debug) println("parametros $parameters")
 
-                val username = parameters["username"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "username ausente")
-                )
-                val name = parameters["name"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "nome ausente")
-                )
-                val password = parameters["password"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "senha ausente")
-                )
-                val email = parameters["email"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "email ausente")
-                )
-                val birthdateRaw = parameters["birthdate"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "data de nascimento ausente")
-                )
-                val phone = parameters["phone"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "telefone ausente")
-                )
-                val cep = parameters["cep"] ?: return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    mapOf("message" to "CEP ausente")
-                )
+                val multipart = call.receiveMultipart()
+                val formData = mutableMapOf<String, String>()
+                var profilePictureBytes: ByteArray? = null
+                var profilePictureFileName: String? = null
 
-                // converte a birthdate para o formato da database
+                multipart.forEachPart { part ->
+                    when (part) {
+                        is PartData.FormItem -> {
+                            formData[part.name ?: ""] = part.value
+                        }
+
+                        is PartData.FileItem -> {
+                            if (part.name == "profilePicture") {
+                                profilePictureFileName = part.originalFileName
+                                profilePictureBytes = part.streamProvider().readBytes()
+                            }
+                        }
+
+                        else -> {}
+                    }
+
+                    part.dispose()
+                }
+
+                if (debug) println("formData: $formData")
+
+                val requiredFields = listOf("username", "name", "password", "email", "birthdate", "phone", "cep")
+                for (field in requiredFields) {
+                    if (formData[field].isNullOrBlank()) {
+                        return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "$field ausente"))
+                    }
+                }
+
                 val birthdate: LocalDate = try {
-                    OffsetDateTime.parse(birthdateRaw).toLocalDate()
+                    OffsetDateTime.parse(formData["birthdate"]).toLocalDate()
                 } catch (e: Exception) {
                     try {
-                        LocalDate.parse(birthdateRaw.substring(0, 10))
+                        LocalDate.parse(formData["birthdate"]?.substring(0, 10))
                     } catch (e: Exception) {
                         return@post call.respond(
                             HttpStatusCode.BadRequest,
@@ -258,31 +320,26 @@ fun Application.configureRouting() {
 
                 val user = User(
                     id = -1,
-                    username = username,
-                    name = name,
-                    psw = password,
-                    address = buscarEndereco(cep),
+                    username = formData["username"]!!,
+                    name = formData["name"]!!,
+                    psw = formData["password"]!!,
+                    address = buscarEndereco(formData["cep"]!!),
                     birthday = birthdate,
-                    email = email,
-                    phone = phone,
+                    email = formData["email"]!!,
+                    phone = formData["phone"]!!,
                     description = null
                 )
 
+                if (debug) println("Created user.")
+
+                if (profilePictureBytes != null) {
+                    if (debug) println("Pfp not null")
+                    val filePath = "backend/src/main/resources/UserPfp/${formData["username"]}_pfp.jpg"
+                    File(filePath).writeBytes(profilePictureBytes!!)
+                    if (debug) println("Salvou foto em $filePath")
+                }
+
                 if (insertUser(user)) {
-                if (insertUser(
-                        User(
-                            id = -1,
-                            username = username,
-                            name = name,
-                            psw = password,
-                            address = buscarEndereco(cep),
-                            birthday = birthdate,
-                            email = email,
-                            phone = phone,
-                            description = null,
-                        )
-                    )
-                ) {
                     if (debug) println("registro bem sucedido")
                     call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
                 } else {
@@ -290,6 +347,64 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.Conflict, mapOf("message" to "Erro ao registrar usuário"))
                 }
             }
+
+            post("/write") {
+                try {
+                    val time = System.currentTimeMillis()
+                    val multipart = call.receiveMultipart()
+                    var caption: String? = null
+                    var imageFile: File? = null
+
+                    multipart.forEachPart { part ->
+                        when (part) {
+                            is PartData.FormItem -> {
+                                if (part.name == "caption") {
+                                    caption = part.value
+                                }
+                            }
+
+                            is PartData.FileItem -> {
+                                if (part.name == "image") {
+                                    val fileName = "${time}_post.jpg"
+                                    imageFile = File("backend/src/main/resources/PostImg/$fileName")
+                                    part.streamProvider().use { input ->
+                                        imageFile!!.outputStream().buffered().use { output ->
+                                            input.copyTo(output)
+                                        }
+                                    }
+                                }
+                            }
+
+                            else -> {}
+                        }
+                        part.dispose()
+                    }
+
+                    val session = call.sessions.get<UserSession>()
+
+                    val post = Post(
+                        postID = -1,
+                        ownerID = session?.id!!,
+                        imgUrl = "http://localhost:8080/api/postimg/${time}_post.jpg",
+                        caption = caption!!,
+                        timestamp = time
+                    )
+
+                    // 4. Validate and respond
+
+                    if (insertPost(post)) {
+                        if (debug) println("postagem bem sucedida")
+                        call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
+                    } else {
+                        if (debug) println("registro mal sucedido")
+                        call.respond(HttpStatusCode.Conflict, mapOf("message" to "Erro ao registrar usuário"))
+                    }
+
+                } catch (e: Exception) {
+                    call.respond(mapOf("success" to false, "message" to "Error: ${e.message}"))
+                }
+            }
+
 
         }
     }

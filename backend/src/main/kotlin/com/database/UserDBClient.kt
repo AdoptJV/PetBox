@@ -236,3 +236,28 @@ fun getAllUsers(): List<String> {
     }
     return users
 }
+
+fun getIDbyUsername(username : String) : Int {
+    val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
+    try {
+        val sql = """
+            SELECT id FROM USERS
+            WHERE username LIKE ?
+        """.trimIndent()
+        val statement = connection.prepareStatement(sql)
+        statement.setString(1, username)
+        var userID = -1
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            userID= resultSet.getInt("id")
+        }
+        return userID
+    }
+    catch (e: SQLException) {
+        e.printStackTrace()
+        return -1
+    }
+    finally {
+        connection.close()
+    }
+}

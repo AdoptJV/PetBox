@@ -89,8 +89,8 @@ const Chat = ({ contact }) => {
     }
 
     return (
-        <div className="container d-flex flex-column vh-100 py-3">
-            <h2 className="mb-3">Chat com {contact.username}</h2>
+        <div className="container d-flex flex-column py-3" style={{ height: "calc(100vh - 65px)" }}>
+        <h2 className="mb-3">Chat com {contact.username}</h2>
 
             <div className="flex-grow-1 overflow-auto border rounded p-3 bg-light" style={{ minHeight: "300px" }}>
                 {messages.map((msg, idx) => (

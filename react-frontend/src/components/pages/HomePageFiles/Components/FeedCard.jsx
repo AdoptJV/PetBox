@@ -1,11 +1,11 @@
 import PostCard from "./PostCard.jsx";
 import CommentCard from "./CommentCard.jsx";
 
-function FeedCard() {
+function FeedCard({ postData }) {
     return (
         <div className="d-flex justify-content-center" style={{height: "40rem"}}>
-            <PostCard/>
-            <CommentCard/>
+            <PostCard postData={postData}/>
+            <CommentCard postId={postData.postID}/>
         </div>
     )
 }

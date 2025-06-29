@@ -6,7 +6,7 @@ function Navbar({ collapsed, toggleSidebar }) {
     const [username, setUsername] = useState("");
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/home", {
+        fetch("http://localhost:8080/api/nav", {
             credentials: "include",
         })
             .then(res => res.json())
@@ -27,7 +27,13 @@ function Navbar({ collapsed, toggleSidebar }) {
             </button>
 
             <a className="navbar-brand" href="/profile">
-                <img src={userIcon} width="35" height="35" className="mx-3 d-inline-block align-top" alt="Foto do usuário"/>
+                <img src={`http://localhost:8080/api/pfps/${username}_pfp.jpg`}
+                     onError={(e) => {
+                         e.currentTarget.src = userIcon;
+                         e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
+                     }}
+                     width="35" height="35" className="mx-3 shadow d-inline-block align-top rounded-circle"
+                     alt="Foto do usuário"/>
                 {username}
             </a>
 

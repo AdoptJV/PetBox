@@ -6,6 +6,7 @@ import RegisterPetPage from "./components/pages/RegisterPetFiles/RegisterPetPage
 import RegisterUserPage from "./components/pages/RegisterUserFiles/RegisterUserPage.jsx";
 import ChatPage from "./components/pages/ChatFiles/ChatPage.jsx";
 import ProtectedRoute from "./ProtectedRoutes.jsx";
+import PostPage from "./components/pages/PostFiles/PostPage.jsx";
 
 function App() {
 
@@ -28,6 +29,12 @@ function App() {
                 <Route path="/chat" element={
                     <ProtectedRoute>
                     <ChatPage/>
+                    </ProtectedRoute>
+                }/>
+
+                <Route path="/write" element={
+                    <ProtectedRoute>
+                        <PostPage/>
                     </ProtectedRoute>
                 }/>
          </Routes>

@@ -7,10 +7,10 @@ import Phone from "./Components/Phone.jsx";
 import Email from "./Components/Email.jsx";
 import Username from "./Components/Username.jsx";
 import Password from "./Components/Password.jsx";
-import ProfilePicture from "./Components/ProfilePicture.jsx";
 import Cep from "./Components/Cep.jsx";
 import UseTerms from "./Components/UseTerms.jsx";
 import clouds from "../../../assets/clouds.png";
+import UserPfp from "./Components/UserPfp.jsx";
 
 function RegisterUserPage() {
     const [formData, setFormData] = useState({
@@ -26,6 +26,7 @@ function RegisterUserPage() {
     });
     const [response, setResponse] = useState("");
     const navigate = useNavigate();
+    const [profilePicture, setProfilePicture] = useState(null);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -39,11 +40,19 @@ function RegisterUserPage() {
         e.preventDefault();
         console.log("Form submitted:", formData);
         try {
+            const formPayload = new FormData();
+            for (const key in formData) {
+                formPayload.append(key, formData[key]);
+            }
+            if (profilePicture) {
+                formPayload.append("profilePicture", profilePicture);
+            }
+
             const res = await fetch("http://localhost:8080/api/register-user", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: formPayload,
             });
+
             const data = await res.json();
 
             if (res.ok) {
@@ -75,7 +84,7 @@ function RegisterUserPage() {
                         <Email value={formData.email} onChange={handleChange}/>
                         <Username value={formData.username} onChange={handleChange}/>
                         <Password value={formData.password} onChange={handleChange}/>
-                        <ProfilePicture/>
+                        <UserPfp onChange={setProfilePicture}/>
                     </div>
                     <Cep value={formData.cep} onChange={handleChange}/>
                     <UseTerms/>

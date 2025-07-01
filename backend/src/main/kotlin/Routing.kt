@@ -15,6 +15,7 @@ import com.jvdev.com.cep.externalApiAvailable
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
 import com.jvdev.com.models.User
+import com.jvdev.com.models.Comment
 import com.jvdev.com.models.Post
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
@@ -78,7 +79,9 @@ fun Application.configureRouting() {
                     if (debug) println("não esta logado")
                     call.respond(
                         HttpStatusCode.Forbidden, mapOf(
-                            "username" to ""
+                            "username" to "",
+                            "userId" to "",
+                            "pfp" to ""
                         )
                     )
                 } else {
@@ -88,6 +91,7 @@ fun Application.configureRouting() {
                     return@get call.respond(
                         HttpStatusCode.OK, mapOf(
                             "username" to session.username,
+                            "userId" to session.id.toString(),
                             "pfp" to pfpUrl
                         )
                     )
@@ -167,24 +171,19 @@ fun Application.configureRouting() {
                 }
             }
 
-            get("/profilepets") {
+            post("/profilepets") {
                 if (debug) println("solicitação profilepets")
-                val session = call.sessions.get<UserSession>()
-                if (session == null) {
-                    if (debug) println("não está logado")
-                    call.respond(
-                        HttpStatusCode.Forbidden, mapOf(
-                            "username" to ""
-                        )
-                    )
-                } else {
-                    println("Query PETs por user")
-                    val petUserList = getPetByUser(session.id)
-                    val petUserJson = Json.encodeToString(petUserList)
-                    if(debug) println(petUserJson)
 
-                    call.respond(HttpStatusCode.OK, petUserJson)
-                }
+                val json = call.receive<JsonObject>()
+                val username = json["username"]?.jsonPrimitive?.content ?: "unknown"
+                val userId = getIDbyUsername(username)
+
+                println("Query PETs por user")
+                val petUserList = getPetByUser(userId)
+                val petUserJson = Json.encodeToString(petUserList)
+                if(debug) println(petUserJson)
+
+                call.respond(HttpStatusCode.OK, petUserJson)
             }
 
             get("/homeposts") {
@@ -207,27 +206,23 @@ fun Application.configureRouting() {
                 }
             }
 
-            get("/profileposts") {
+            post("/profileposts") {
                 if (debug) println("solicitação profileposts")
-                val session = call.sessions.get<UserSession>()
-                if (session == null) {
-                    if (debug) println("não está logado")
-                    call.respond(
-                        HttpStatusCode.Forbidden, mapOf(
-                            "username" to ""
-                        )
-                    )
-                } else {
-                    println("Query user posts")
-                    val postList = getPostByUser(session.id)
-                    val postJson = Json.encodeToString(postList)
-                    if(debug) println(postList)
 
-                    call.respond(HttpStatusCode.OK, postJson)
-                }
+                val json = call.receive<JsonObject>()
+                val username = json["username"]?.jsonPrimitive?.content ?: "unknown"
+                val userId = getIDbyUsername(username)
+
+                println("Query user posts")
+                val postList = getPostByUser(userId)
+                val postJson = Json.encodeToString(postList)
+                if(debug) println(postList)
+
+                call.respond(HttpStatusCode.OK, postJson)
             }
 
-            post("/poster") {
+            post("/getuser") {
+                if(debug) println("getuser request")
                 val json = call.receive<JsonObject>()
                 val userId = json["userId"]?.jsonPrimitive?.content ?: "unknown"
 
@@ -237,8 +232,24 @@ fun Application.configureRouting() {
                     put("userId", userId)
                     put("username", username)
                 }
-
+                if(debug) println(response)
                 call.respond(response)
+            }
+
+            post("/comments") {
+                val json = call.receive<JsonObject>()
+                val postID = json["postID"]?.jsonPrimitive?.intOrNull
+                if(debug) println("COMMENTING $postID")
+
+                if (postID == null) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid or missing postID"))
+                    return@post
+                }
+
+                val comments: List<Comment> = getCommentByPost(postID) ?: emptyList()
+                if(debug) println(comments.isEmpty().toString() + " " + comments)
+
+                call.respond(HttpStatusCode.OK, comments)
             }
 
             get("/cep-info/{cep}") {

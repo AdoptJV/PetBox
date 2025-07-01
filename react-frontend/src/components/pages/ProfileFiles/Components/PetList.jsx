@@ -2,23 +2,32 @@ import PetCard from "../../../general/PetCard.jsx";
 import {useEffect, useState} from "react";
 
 function PetList({username}) {
-    const [pets, setPets] = useState("");
+    const [pets, setPets] = useState(null);
+    console.log(username)
     useEffect(() => {
-        fetch("http://localhost:8080/api/profilepets", {
-            credentials: "include",
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro selecionando pets próximos");
-                return res.json();
-            })
-            .then(data => {
+        async function fetchUserInfo() {
+            try {
+                const res = await fetch("http://localhost:8080/api/profilepets", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({username: username}),
+                });
+
+                if (!res.ok) {
+                    console.error("Server error", res.status);
+                    return;
+                }
+
+                const data = await res.json();
+                console.log("Received data:", data);
                 setPets(data);
-            })
-            .catch(error => {
-                console.error("Erro selecionando pets próximos:", error);
-                setPets([]);
-            });
-    }, []);
+            } catch (e) {
+                console.error("Fetch failed:", e);
+            }
+        }
+
+        fetchUserInfo();
+    }, [username]);
 
     return (
         <div className="container-fluid overflow-x-scroll">
@@ -37,7 +46,6 @@ function PetList({username}) {
             </div>
         </div>
     );
-
 }
 
 export default PetList

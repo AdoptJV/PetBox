@@ -1,6 +1,7 @@
 package com.jvdev
 import Message
 import com.jvdev.com.ChatServer.ChatServer
+import com.jvdev.com.cep.Endereco
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -10,6 +11,7 @@ import java.io.File
 import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
 import com.jvdev.com.cep.buscarEndereco
+import com.jvdev.com.cep.externalApiAvailable
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
 import com.jvdev.com.models.User
@@ -244,7 +246,19 @@ fun Application.configureRouting() {
                 val cep = call.parameters["cep"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid CEP")
                 if (debug) println("cep informado: $cep")
                 try {
-                    val address = buscarEndereco(cep)
+                    val mock = Endereco(
+                        cep = "00000000",
+                        logradouro = "API fora do ar",
+                        complemento = "123",
+                        bairro = "API fora do ar",
+                        localidade = "API fora do ar",
+                        uf = "API fora do ar",
+                        ibge = "?",
+                        gia = "?",
+                        ddd = "00",
+                        siafi = "?"
+                    )
+                    val address = if(externalApiAvailable.get()) buscarEndereco(cep) else mock
                     if (debug) println("endereco obtido: $address")
                     call.respond(address)
                 } catch (e: Exception) {
@@ -359,23 +373,39 @@ fun Application.configureRouting() {
                     }
                 }
 
+                val mock = Endereco(
+                    cep = formData["cep"]!!,
+                    logradouro = "API fora do ar",
+                    complemento = "123",
+                    bairro = "API fora do ar",
+                    localidade = "API fora do ar",
+                    uf = "API fora do ar",
+                    ibge = "?",
+                    gia = "?",
+                    ddd = "00",
+                    siafi = "?"
+                )
+
+                val endereco = if(externalApiAvailable.get()) buscarEndereco(formData["cep"]!!) else mock
+                if(endereco != mock) insertAddress(endereco)
+
                 val user = User(
                     id = -1,
                     username = formData["username"]!!,
                     name = formData["name"]!!,
                     psw = formData["password"]!!,
-                    address = buscarEndereco(formData["cep"]!!),
+                    address = endereco,
                     birthday = birthdate,
                     email = formData["email"]!!,
                     phone = formData["phone"]!!,
                     description = null
                 )
 
-                if (debug) println("Created user.")
+                if (debug) println("Created user $user.")
 
                 if (profilePictureBytes != null) {
                     if (debug) println("Pfp not null")
-                    val filePath = "backend/src/main/resources/UserPfp/${formData["username"]}_pfp.jpg"
+                    val filePath = "src/main/resources/UserPfp/${formData["username"]}_pfp.jpg"
                     File(filePath).writeBytes(profilePictureBytes!!)
                     if (debug) println("Salvou foto em $filePath")
                 }

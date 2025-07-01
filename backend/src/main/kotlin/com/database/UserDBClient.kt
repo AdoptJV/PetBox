@@ -1,5 +1,6 @@
 package com.jvdev.com.database
 import com.jvdev.com.cep.buscarEndereco
+import com.jvdev.com.cep.externalApiAvailable
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.models.User
 import com.jvdev.com.models.UserType
@@ -16,7 +17,7 @@ import java.time.format.DateTimeFormatter
  * @return booleano informando se deu certo a inserção
  * @throws SQLException conexão com o banco de dados falhou
  */
-fun insertUser(user: User): Boolean {
+suspend fun insertUser(user: User): Boolean {
     val connection = connectToDatabase() ?: throw SQLException("Could not connect to database.")
     val sql = """
       INSERT INTO USERS
@@ -37,6 +38,7 @@ fun insertUser(user: User): Boolean {
         stmt.setString(9, user.description)
         stmt.setString(10, if (user.usrType == UserType.ONG) "ONG" else "REGULAR")
         stmt.setString(11, user.joined.toString())
+        if(externalApiAvailable.get()) stmt.setString(12, buscarEndereco(user.address?.cep!!).localidade)
 
         return stmt.executeUpdate() == 1 // verifica se uma linha foi atualizada no banco de dados
     } catch (e: SQLException) {
@@ -119,14 +121,10 @@ suspend fun getUserByUsername(username: String): User? {
         val sql = """
         SELECT * FROM USERS WHERE username = ?
         """.trimIndent()
-        println(1)
         val statement = connection.prepareStatement(sql)
-        println(2)
 
         statement.setString(1, username)
-        println(3)
         val resultSet = statement.executeQuery()
-        println(4)
         if (resultSet.next()) {
             val id = resultSet.getInt("id")
             val name = resultSet.getString("name")
@@ -139,7 +137,6 @@ suspend fun getUserByUsername(username: String): User? {
             val userType = UserType.valueOf(resultSet.getString("userType"))
             val joined = resultSet.getString("joined")
             val description = resultSet.getString("description")
-            println(5)
             return User(
                 id = id,
                 username = username,
@@ -164,7 +161,6 @@ suspend fun getUserByUsername(username: String): User? {
     }
     finally {
         connection.close()
-        println("Fechou")
     }
 }
 

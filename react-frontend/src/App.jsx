@@ -7,6 +7,7 @@ import RegisterUserPage from "./components/pages/RegisterUserFiles/RegisterUserP
 import ChatPage from "./components/pages/ChatFiles/ChatPage.jsx";
 import ProtectedRoute from "./ProtectedRoutes.jsx";
 import PostPage from "./components/pages/PostFiles/PostPage.jsx";
+import ProfilePage from "./components/pages/ProfileFiles/ProfilePage.jsx";
 
 function App() {
 
@@ -35,6 +36,12 @@ function App() {
                 <Route path="/write" element={
                     <ProtectedRoute>
                         <PostPage/>
+                    </ProtectedRoute>
+                }/>
+
+                <Route path="/profile" element={
+                    <ProtectedRoute>
+                        <ProfilePage/>
                     </ProtectedRoute>
                 }/>
          </Routes>

@@ -10,7 +10,7 @@ import java.sql.SQLException
 
 fun connectToDatabase(): Connection? {
     try {
-        val path = Paths.get("backend/database/data.sqlite").toAbsolutePath()
+        val path = Paths.get("database/data.sqlite").toAbsolutePath()
         println("Connecting to DB at: $path")
         val url = "jdbc:sqlite:$path"
         return DriverManager.getConnection(url)

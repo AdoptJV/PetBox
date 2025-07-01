@@ -1,11 +1,10 @@
-import FeedCard from "./FeedCard.jsx";
+import FeedCard from "../../HomePageFiles/Components/FeedCard.jsx";
 import {useEffect, useState} from "react";
-import PetCard from "../../../general/PetCard.jsx";
 
-function FeedScroll() {
+function PostList({username}) {
     const [posts, setPosts] = useState("");
     useEffect(() => {
-        fetch("http://localhost:8080/api/homeposts", {
+        fetch("http://localhost:8080/api/profileposts", {
             credentials: "include",
         })
             .then(res => {
@@ -25,8 +24,8 @@ function FeedScroll() {
         <div className="w-100 text-center">
             <div className="d-flex flex-column flex-nowrap">
                 {
-                    posts.length === 0 ? (
-                        <p className="text-center">Não há posts no momento :(</p>
+                    !posts || posts.length === 0 ? (
+                        <p className="text-center">{username} não possui posts :(</p>
                     ) : (
                         posts.map((post, idx) => (
                             <div className="row mx-2 my-3 justify-content-center" key={idx}>
@@ -41,4 +40,4 @@ function FeedScroll() {
     );
 }
 
-export default FeedScroll
+export default PostList

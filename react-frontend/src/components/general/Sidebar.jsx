@@ -28,6 +28,7 @@ function Sidebar({ collapsed }) {
                 navigate(data.redirect);
             }
             setResponse(`Server echoed: ${data.echo}`);
+            navigate("/");
         } catch (err) {
             console.error(err);
             setResponse("Error sending message");

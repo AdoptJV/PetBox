@@ -54,28 +54,34 @@ fun queryAllPosts(): List<Post> {
     return posts
 }
 
-suspend fun getPostByUser(id: Int): Post? {
+suspend fun getPostByUser(uid : Int): MutableList<Post>? {
+    if(uid == -1) return null
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     try {
         val sql = """
-        SELECT * FROM POSTS WHERE user = ?
+        SELECT *
+        FROM POSTS
+        WHERE user LIKE ?
         """.trimIndent()
 
         val statement = connection.prepareStatement(sql)
+        statement.setInt(1, uid)
 
-        statement.setInt(1, id)
         val resultSet = statement.executeQuery()
-        if (resultSet.next()) {
-            return Post(
-                postID = resultSet.getInt("id"),
-                ownerID = resultSet.getInt("user"),
-                imgUrl = resultSet.getString("photoUrl"),
-                caption = resultSet.getString("caption"),
-                timestamp = resultSet.getLong("timestamp"),
-            )
-        }
-        else return null
 
+        val posts : MutableList<Post> = mutableListOf()
+        while (resultSet.next()) {
+            posts.add(
+                Post(
+                    postID = resultSet.getInt("id"),
+                    ownerID = resultSet.getInt("user"),
+                    imgUrl = resultSet.getString("photoUrl"),
+                    caption = resultSet.getString("caption"),
+                    timestamp = resultSet.getLong("timestamp"),
+                ))
+        }
+        if(posts.isEmpty()) return null
+        return posts
     }
     catch (e: SQLException) {
         e.printStackTrace()

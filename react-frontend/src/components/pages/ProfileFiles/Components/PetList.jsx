@@ -1,10 +1,10 @@
-import PetCard from "./PetCard.jsx";
+import PetCard from "../../../general/PetCard.jsx";
 import {useEffect, useState} from "react";
 
-function HorizontalList() {
+function PetList({username}) {
     const [pets, setPets] = useState("");
     useEffect(() => {
-        fetch("http://localhost:8080/api/homepets", {
+        fetch("http://localhost:8080/api/profilepets", {
             credentials: "include",
         })
             .then(res => {
@@ -24,8 +24,8 @@ function HorizontalList() {
         <div className="container-fluid overflow-x-scroll">
             <div className="d-flex flex-row" style={{ gap: "1rem", minWidth: "max-content" }}>
                 {
-                    pets.length === 0 ? (
-                        <p className="text-center">Não há PETs próximos de você :(</p>
+                    !pets || pets.length === 0 ? (
+                        <p className="text-center">{username} não possui PETs</p>
                     ) : (
                         pets.map((pet, idx) => (
                             <div key={idx} style={{ flex: "0 0 auto" }}>
@@ -40,4 +40,4 @@ function HorizontalList() {
 
 }
 
-export default HorizontalList
+export default PetList

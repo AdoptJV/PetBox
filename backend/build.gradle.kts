@@ -4,7 +4,7 @@ val logback_version: String by project
 
 plugins {
     kotlin("jvm") version "2.1.10"
-    id("io.ktor.plugin") version "3.1.2"
+    id("io.ktor.plugin") version "2.3.10"
     kotlin("plugin.serialization") version "2.1.10"
 }
 
@@ -20,6 +20,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
 }
 
 dependencies {
@@ -53,8 +54,8 @@ dependencies {
     // Créditos: https://github.com/thiago-cury/viacep-android-kotlin-retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.3.0")
     implementation("com.squareup.retrofit2:converter-gson:2.3.0")
-    implementation("io.ktor:ktor-server-content-negotiation:3.1.2")
-    implementation("io.ktor:ktor-server-websockets:3.1.2")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-server-websockets:$ktor_version")
 
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
@@ -63,5 +64,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
     implementation("io.ktor:ktor-server-freemarker:2.2.1")
     implementation("io.ktor:ktor-server-websockets:2.3.9")
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    testImplementation("io.ktor:ktor-server-tests:2.3.10")
+
+    testImplementation("io.ktor:ktor-client-plugins:2.3.10")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

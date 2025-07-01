@@ -92,10 +92,10 @@ fun Application.configureRouting() {
                 }
             }
             static("/pfps") {
-                files("backend/src/main/resources/UserPfp")
+                files("src/main/resources/UserPfp")
             }
             static("/postimg") {
-                files("backend/src/main/resources/PostImg")
+                files("src/main/resources/PostImg")
             }
 
             get("/messages") {
@@ -165,6 +165,26 @@ fun Application.configureRouting() {
                 }
             }
 
+            get("/profilepets") {
+                if (debug) println("solicitação profilepets")
+                val session = call.sessions.get<UserSession>()
+                if (session == null) {
+                    if (debug) println("não está logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden, mapOf(
+                            "username" to ""
+                        )
+                    )
+                } else {
+                    println("Query PETs por user")
+                    val petUserList = getPetByUser(session.id)
+                    val petUserJson = Json.encodeToString(petUserList)
+                    if(debug) println(petUserJson)
+
+                    call.respond(HttpStatusCode.OK, petUserJson)
+                }
+            }
+
             get("/homeposts") {
                 if (debug) println("solicitação homeposts")
                 val session = call.sessions.get<UserSession>()
@@ -178,6 +198,26 @@ fun Application.configureRouting() {
                 } else {
                     println("Query Posts")
                     val postList = queryAllPosts()
+                    val postJson = Json.encodeToString(postList)
+                    if(debug) println(postList)
+
+                    call.respond(HttpStatusCode.OK, postJson)
+                }
+            }
+
+            get("/profileposts") {
+                if (debug) println("solicitação profileposts")
+                val session = call.sessions.get<UserSession>()
+                if (session == null) {
+                    if (debug) println("não está logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden, mapOf(
+                            "username" to ""
+                        )
+                    )
+                } else {
+                    println("Query user posts")
+                    val postList = getPostByUser(session.id)
                     val postJson = Json.encodeToString(postList)
                     if(debug) println(postList)
 

@@ -33,7 +33,7 @@ fun insertUser(user: User): Boolean {
         stmt.setString(5, pswUtil.generateHash(user.psw))
         stmt.setString(6, user.pfpUrl)
         stmt.setString(7, user.phone)
-        stmt.setString(8, user.address.cep)
+        stmt.setString(8, user.address?.cep)
         stmt.setString(9, user.description)
         stmt.setString(10, if (user.usrType == UserType.ONG) "ONG" else "REGULAR")
         stmt.setString(11, user.joined.toString())
@@ -119,11 +119,14 @@ suspend fun getUserByUsername(username: String): User? {
         val sql = """
         SELECT * FROM USERS WHERE username = ?
         """.trimIndent()
-
+        println(1)
         val statement = connection.prepareStatement(sql)
+        println(2)
 
         statement.setString(1, username)
+        println(3)
         val resultSet = statement.executeQuery()
+        println(4)
         if (resultSet.next()) {
             val id = resultSet.getInt("id")
             val name = resultSet.getString("name")
@@ -136,12 +139,13 @@ suspend fun getUserByUsername(username: String): User? {
             val userType = UserType.valueOf(resultSet.getString("userType"))
             val joined = resultSet.getString("joined")
             val description = resultSet.getString("description")
+            println(5)
             return User(
                 id = id,
                 username = username,
                 name = name,
                 psw = password,
-                address = buscarEndereco(cep),
+                address = null,
                 birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
                 email = email,
                 phone = phone,
@@ -160,6 +164,7 @@ suspend fun getUserByUsername(username: String): User? {
     }
     finally {
         connection.close()
+        println("Fechou")
     }
 }
 
@@ -191,7 +196,7 @@ suspend fun getUserByID(id: Int): User? {
                 username = username,
                 name = name,
                 psw = password,
-                address = buscarEndereco(cep),
+                address = null,
                 birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
                 email = email,
                 phone = phone,

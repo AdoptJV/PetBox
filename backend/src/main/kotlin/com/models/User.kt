@@ -15,7 +15,7 @@ data class User (
     val email : String,                             // user email
     val psw : String,                               // user password
     val phone : String,                             // user phone number
-    val address : Endereco,                         // user address
+    val address : Endereco?,                         // user address
     val usrType : UserType = UserType.REGULAR,      // user type
     val joined : LocalDate = LocalDate.now(),       // user joined date
     val pfpUrl : String? = null,                    // user profile photo URL

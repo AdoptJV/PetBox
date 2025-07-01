@@ -285,8 +285,9 @@ fun Application.configureRouting() {
                     request["username"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Username required")
                 val password =
                     request["password"] ?: return@post call.respond(HttpStatusCode.BadRequest, "Password required")
-
+                println("Before")
                 val user = getUserByUsername(username)
+                println("After")
 
                 if (user == null) {
                     if (debug) println("Usuário não encontrado")

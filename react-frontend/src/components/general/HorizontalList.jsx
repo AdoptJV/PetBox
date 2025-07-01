@@ -24,7 +24,7 @@ function HorizontalList() {
         <div className="container-fluid overflow-x-scroll">
             <div className="d-flex flex-row" style={{ gap: "1rem", minWidth: "max-content" }}>
                 {
-                    pets.length === 0 ? (
+                    !pets || pets.length === 0 ? (
                         <p className="text-center">Não há PETs próximos de você :(</p>
                     ) : (
                         pets.map((pet, idx) => (

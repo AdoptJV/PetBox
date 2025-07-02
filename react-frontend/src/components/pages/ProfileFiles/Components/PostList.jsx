@@ -2,23 +2,33 @@ import FeedCard from "../../HomePageFiles/Components/FeedCard.jsx";
 import {useEffect, useState} from "react";
 
 function PostList({username}) {
-    const [posts, setPosts] = useState("");
+    console.log("USERNAME PL " + username)
+    const [posts, setPosts] = useState(null);
     useEffect(() => {
-        fetch("http://localhost:8080/api/profileposts", {
-            credentials: "include",
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro selecionando posts pro feed");
-                return res.json();
-            })
-            .then(data => {
+        async function fetchUserInfo() {
+            try {
+                const res = await fetch("http://localhost:8080/api/profileposts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: username }),
+                });
+
+                if (!res.ok) {
+                    console.error("Server error", res.status);
+                    return;
+                }
+
+                const data = await res.json();
+                console.log("Received data:", data);
                 setPosts(data);
-            })
-            .catch(error => {
-                console.error("Erro selecionando posts pro feed:", error);
-                setPosts([]);
-            });
-    }, []);
+            } catch (e) {
+                console.error("Fetch failed:", e);
+            }
+        }
+
+        fetchUserInfo();
+    }, [username]);
+    console.log(posts)
 
     return (
         <div className="w-100 text-center">

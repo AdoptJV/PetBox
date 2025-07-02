@@ -30,6 +30,7 @@ usuários sobre os bichinhos que adotaram e das ONGs sobre os bichinhos disponí
   
   no diretório PetBox/react-frontend. O frontend é hosteado na porta 5173, acessível em localhost:5173/login (é a landing page).
   Possivelmente, será necessário executar ```npm install``` nesse diretório react-frontend
+  
   Basta criar um usuário e faça o login com as credenciais utilizadas para ganhar acesso ao website.
 
 # Tecnologias utilizadas:

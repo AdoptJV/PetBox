@@ -93,16 +93,68 @@ const Chat = ({ contact }) => {
         <h2 className="mb-3">Chat com {contact.username}</h2>
 
             <div className="flex-grow-1 overflow-auto border rounded p-3 bg-light" style={{ minHeight: "300px" }}>
-                {messages.map((msg, idx) => (
-                    <div
-                        key={idx}
-                        className={`d-flex ${msg.from === username ? "justify-content-end" : "justify-content-start"}`}
-                    >
-                        <div className={`badge ${msg.from === username ? "bg-primary" : "bg-secondary"}`}>
-                            {msg.from}: {msg.content}
+                {messages.map((msg, idx) => {
+                    const isOwn = msg.from === username
+                    const timestampMs = Number(msg.timestamp) < 10000000000 ? Number(msg.timestamp) * 1000 : Number(msg.timestamp)
+                    const date = new Date(timestampMs)
+                    date.setTime(date.getTime() - 3 * 60 * 60 * 1000)
+
+                    const formattedTime = date.toLocaleTimeString("pt-BR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                    })
+
+
+                    return (
+                        <div
+                            key={idx}
+                            className={`mb-3 d-flex ${isOwn ? "justify-content-end" : "justify-content-start"}`}
+                        >
+                            <div style={{ maxWidth: "70%" }}>
+                                {/* Nome e horário */}
+                                <div
+                                    style={{
+                                        fontSize: "0.75rem",
+                                        color: "#666",
+                                        marginBottom: "2px",
+                                        display: "flex",
+                                        justifyContent: isOwn ? "flex-end" : "flex-start",
+                                        gap: "6px",
+                                        // Aqui o texto no bloco todo será alinhado de acordo com o dono da mensagem:
+                                        textAlign: isOwn ? "right" : "left",
+                                    }}
+                                >
+                                    {isOwn ? (
+                                        <>
+                                            <span>{formattedTime}</span>
+                                            <span style={{ fontWeight: "bold" }}>{msg.from}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span style={{ fontWeight: "bold" }}>{msg.from}</span>
+                                            <span>{formattedTime}</span>
+                                        </>
+                                    )}
+                                </div>
+                                {/* Mensagem */}
+                                <div
+                                    style={{
+                                        backgroundColor: isOwn ? "#0d6efd" : "#6c757d",
+                                        color: "white",
+                                        padding: "10px 14px",
+                                        borderRadius: "1rem",
+                                        fontSize: "0.95rem",
+                                        whiteSpace: "pre-wrap",
+                                        wordBreak: "break-word",
+                                    }}
+                                >
+                                    {msg.content}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    )
+                })}
                 <div ref={messagesEndRef} />
             </div>
 

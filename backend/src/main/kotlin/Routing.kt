@@ -96,6 +96,9 @@ fun Application.configureRouting() {
             static("/postimg") {
                 files("src/main/resources/PostImg")
             }
+            static("/petimg") {
+                files("src/main/resources/PetPfp")
+            }
 
             get("/messages") {
                 val from = call.request.queryParameters["from"]
@@ -155,8 +158,14 @@ fun Application.configureRouting() {
                     val user = getUserByID(uid)
                     val city = user?.address?.localidade
 
+                    println(uid)
+                    println(user)
+                    println(city)
+
                     println("Query PETs por cidade")
                     val petCityList = getPetByCity(city)
+
+                    println(petCityList)
                     val petCityJson = Json.encodeToString(petCityList)
                     if(debug) println(petCityJson)
 
@@ -575,9 +584,9 @@ fun Application.configureRouting() {
 
                 if (petPictureBytes != null) {
                     val username = call.sessions.get<UserSession>()?.username ?: "unknown"
-                    val filePath = "src/main/resources/PetPfp/${username}_${id}_pfp.jpg"
+                    val filePath = "src/main/resources/PetPfp/${id}_pfp.jpg"
                     File(filePath).writeBytes(petPictureBytes!!)
-                    pet.photoUrl = "http://localhost:8080/pfps/${username}_${id}_pfp.jpg"
+                    pet.photoUrl = "http://localhost:8080/pfps/${id}_pfp.jpg"
                 }
 
                 if (success) {

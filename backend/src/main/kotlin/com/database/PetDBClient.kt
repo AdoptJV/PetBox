@@ -63,7 +63,7 @@ fun queryAllPets(): List<Pet> {
     return pets
 }
 
-suspend fun getPetByCity(city: String?): MutableList<Map<String, String>>? {
+suspend fun getPetByCity(city: String?): MutableList<Map<String?, String?>>? {
     if(city == null) return null
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     try {
@@ -79,7 +79,7 @@ suspend fun getPetByCity(city: String?): MutableList<Map<String, String>>? {
 
         val resultSet = statement.executeQuery()
 
-        val returnList : MutableList<Map<String, String>> = mutableListOf()
+        val returnList : MutableList<Map<String?, String?>> = mutableListOf()
         while (resultSet.next()) {
             val name = resultSet.getString("name")
             val id = resultSet.getInt("id")

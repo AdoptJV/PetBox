@@ -23,7 +23,7 @@ function PetName({value, onChange}) {
         : `form-control rounded-4 ${error ? "is-invalid" : "is-valid"}`;
 
     return (
-        <div className="col-md-4">
+        <div className="col-md-5 mx-2 my-2">
             <label htmlFor="inputName" className="form-label">Nome do Pet</label>
             <input
                 name="name"

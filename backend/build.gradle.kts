@@ -67,6 +67,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:2.3.10")
 
     testImplementation("io.ktor:ktor-client-plugins:2.3.10")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:3.1.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 }
 

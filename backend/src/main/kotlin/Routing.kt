@@ -14,27 +14,20 @@ import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.cep.externalApiAvailable
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
+import com.jvdev.com.models.Pet
 import com.jvdev.com.models.User
 import com.jvdev.com.models.Comment
 import com.jvdev.com.models.Post
+import com.jvdev.com.models.Sex
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.serialization.json.Json
-import messageHistory
 import io.ktor.http.content.*
+import io.ktor.server.util.*
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.core.*
-import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.io.readByteArray
 import kotlinx.serialization.json.*
 import kotlinx.serialization.json.jsonPrimitive
-import java.io.FileOutputStream
 import kotlin.io.use
 
 const val debug = true
@@ -103,6 +96,9 @@ fun Application.configureRouting() {
             static("/postimg") {
                 files("src/main/resources/PostImg")
             }
+            static("/petimg") {
+                files("src/main/resources/PetPfp")
+            }
 
             get("/messages") {
                 val from = call.request.queryParameters["from"]
@@ -162,8 +158,14 @@ fun Application.configureRouting() {
                     val user = getUserByID(uid)
                     val city = user?.address?.localidade
 
+                    println(uid)
+                    println(user)
+                    println(city)
+
                     println("Query PETs por cidade")
                     val petCityList = getPetByCity(city)
+
+                    println(petCityList)
                     val petCityJson = Json.encodeToString(petCityList)
                     if(debug) println(petCityJson)
 
@@ -518,7 +520,81 @@ fun Application.configureRouting() {
                     call.respond(mapOf("message" to "Error: ${e.message}"))
                 }
             }
+            get("/JSON/species") {
+                if (debug) println("Solicitação do JSON de espécies")
 
+                val file = File("src/main/resources/PetData/species.json")
+                if (file.exists()) {
+                    val jsonContent = file.readText()
+                    call.respondText(jsonContent, ContentType.Application.Json)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Arquivo species.json não encontrado")
+                }
+            }
+            post("/register-pet") {
+                if (debug) println("registro de pet")
+                val multipart = call.receiveMultipart()
+                val formData = mutableMapOf<String, String>()
+                var petPictureBytes: ByteArray? = null
+                var petPictureFileName: String? = null
+
+                multipart.forEachPart { part ->
+                    when (part) {
+                        is PartData.FormItem -> {
+                            formData[part.name ?: ""] = part.value
+                        }
+                        is PartData.FileItem -> {
+                            if (part.name == "profilePicture") {
+                                petPictureFileName = part.originalFileName
+                                petPictureBytes = part.streamProvider().readBytes()
+                            }
+                        }
+                        else -> {}
+                    }
+                    part.dispose()
+                }
+                val requiredFields = listOf("name", "age", "sex", "specie", "castrated")
+                for (field in requiredFields) {
+                    if (formData[field].isNullOrBlank()) {
+                        return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "$field ausente"))
+                    }
+                }
+
+                // Extrair e converter os dados
+                val name = formData["name"]!!
+                val age = formData["age"]!!.toIntOrNull() ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "age inválido"))
+                val sex = formData["sex"]!!  // depende de como você está enviando (ex: "M"/"F" ou "true"/"false")
+                val specie = formData["specie"]!!
+                val castrated = formData["castrated"]!!.toBooleanStrictOrNull() ?: false
+
+                val pet = Pet(
+                    id = -1,  // se for autogerado no banco
+                    name = name,
+                    age = age,
+                    sex = Sex.valueOf(sex),
+                    species = specie,
+                    castrated = castrated,
+                    owner = call.sessions.get<UserSession>()?.id ?: -1,
+                    photoUrl = null,
+                    description = null.toString()
+                )
+                if (debug) { println(pet) }
+                val success = insertPet(pet)
+                val id = getPetID(name, call.sessions.get<UserSession>()?.id ?: -1, specie)
+
+                if (petPictureBytes != null) {
+                    val username = call.sessions.get<UserSession>()?.username ?: "unknown"
+                    val filePath = "src/main/resources/PetPfp/${id}_pfp.jpg"
+                    File(filePath).writeBytes(petPictureBytes!!)
+                    pet.photoUrl = "http://localhost:8080/pfps/${id}_pfp.jpg"
+                }
+
+                if (success) {
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Pet registrado com sucesso"))
+                } else {
+                    call.respond(HttpStatusCode.Conflict, mapOf("message" to "Erro ao registrar pet"))
+                }
+            }
 
         }
     }

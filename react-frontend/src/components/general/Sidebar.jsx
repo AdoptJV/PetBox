@@ -81,7 +81,7 @@ function Sidebar({ collapsed }) {
                         </li>
                         <hr/>
                         <li>
-                            <button className="btn d-flex align-items-center" onClick={() => navigate('/petregister')}>
+                            <button className="btn d-flex align-items-center" onClick={() => navigate('/pet-register')}>
                                 <img src={register} alt={"Registrar Pet"} className="mx-2"/>REGISTRAR PET
                             </button>
                         </li>

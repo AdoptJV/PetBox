@@ -8,6 +8,7 @@ import ChatPage from "./components/pages/ChatFiles/ChatPage.jsx";
 import ProtectedRoute from "./ProtectedRoutes.jsx";
 import PostPage from "./components/pages/PostFiles/PostPage.jsx";
 import ProfilePage from "./components/pages/ProfileFiles/ProfilePage.jsx";
+import SearchPage from "./components/pages/SearchFiles/SearchPage.jsx";
 
 function App() {
 
@@ -42,6 +43,12 @@ function App() {
                 <Route path="/profile/:userId" element={
                     <ProtectedRoute>
                         <ProfilePage/>
+                    </ProtectedRoute>
+                }/>
+
+                <Route path="/search" element={
+                    <ProtectedRoute>
+                        <SearchPage/>
                     </ProtectedRoute>
                 }/>
          </Routes>

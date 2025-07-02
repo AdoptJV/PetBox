@@ -7,7 +7,8 @@ import PetSpecie from "./Components/PetSpecie.jsx";
 import PetCastrated from "./Components/PetCastrated.jsx";
 import PetPfp from "./Components/PetPfp.jsx";
 // import PetPfp from "./Components/PetPfp.jsx"; // supondo que você vai ter isso também
-import clouds from "../../../assets/clouds.png"; // mesma imagem de fundo
+import clouds from "../../../assets/clouds.png";
+import Bars from "../../general/Bars.jsx"; // mesma imagem de fundo
 
 function RegisterPetPage() {
     console.log("RegisterPetPage");
@@ -62,39 +63,41 @@ function RegisterPetPage() {
     };
 
     return (
-        <div
-            className="d-flex justify-content-center align-items-center"
-            style={{
-                backgroundImage: `url(${clouds})`,
-                backgroundColor: "#a1c8ff",
-                minHeight: "100vh",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat"
-            }}
-        >
+        <Bars>
             <div
-                className="py-4 w-50 card shadow rounded-4"
-                style={{ backgroundColor: "#f3f3f3" }}
+                className="d-flex justify-content-center align-items-center"
+                style={{
+                    backgroundImage: `url(${clouds})`,
+                    backgroundColor: "#a1c8ff",
+                    minHeight: "calc(100vh - 65px)",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat"
+                }}
             >
-                <form className="container" onSubmit={handleSubmit}>
-                    <div className="d-flex flex-row justify-content-start flex-wrap">
-                        <PetName value={formData.name} onChange={handleChange} />
-                        <PetAge value={formData.age} onChange={handleChange} />
-                        <PetSex value={formData.sex} onChange={handleChange} />
-                        <PetSpecie value={formData.specie} onChange={handleChange} />
-                        <PetCastrated value={formData.castrated} onChange={handleChange} />
-                        <PetPfp onChange={setProfilePicture} />
-                    </div>
+                <div
+                    className="py-4 w-50 card shadow rounded-4"
+                    style={{ backgroundColor: "#f3f3f3" }}
+                >
+                    <form className="container" onSubmit={handleSubmit}>
+                        <div className="d-flex flex-row justify-content-start flex-wrap">
+                            <PetName value={formData.name} onChange={handleChange} />
+                            <PetAge value={formData.age} onChange={handleChange} />
+                            <PetSex value={formData.sex} onChange={handleChange} />
+                            <PetSpecie value={formData.specie} onChange={handleChange} />
+                            <PetCastrated value={formData.castrated} onChange={handleChange} />
+                            <PetPfp onChange={setProfilePicture} />
+                        </div>
 
-                    <div className="my-3 d-flex justify-content-center">
-                        <button type="submit" className="btn btn-primary">Registrar Pet</button>
-                    </div>
+                        <div className="my-3 d-flex justify-content-center">
+                            <button type="submit" className="btn btn-primary">Registrar Pet</button>
+                        </div>
 
-                    {response && <div className="alert alert-info mt-3">{response}</div>}
-                </form>
+                        {response && <div className="alert alert-info mt-3">{response}</div>}
+                    </form>
+                </div>
             </div>
-        </div>
+        </Bars>
     );
 
 }

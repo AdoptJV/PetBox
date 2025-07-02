@@ -287,6 +287,28 @@ fun Application.configureRouting() {
                 }
             }
 
+            post("/filter") {
+                if (debug) println("Solicitação de busca")
+                val session = call.sessions.get<UserSession>()
+                if (debug) println("1")
+                val filters = call.receive<Map<String?, String?>>()
+                if (debug) println("2")
+
+                if (session == null) {
+                    if (debug) println("Não está logado")
+                    call.respond(
+                        HttpStatusCode.Forbidden,
+                        mapOf("username" to "")
+                    )
+                } else {
+                    if (debug) println("Filtros recebidos: $filters")
+                    val petList = getPetByFilters(filters)
+                    val petJson = Json.encodeToString(petList)
+                    call.respond(HttpStatusCode.OK, petJson)
+                }
+            }
+
+
             get("/cep-info/{cep}") {
                 if (debug) println("processamento de cep")
                 val cep = call.parameters["cep"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid CEP")

@@ -26,7 +26,6 @@ function PostPage() {
         if (file) {
             setPostData(prev => ({ ...prev, image: file }));
 
-            // Create preview URL
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreviewUrl(reader.result);
@@ -138,7 +137,7 @@ function PostPage() {
                         <button
                             type="submit"
                             className="btn btn-primary"
-                            disabled={!postData.image} // Disable if no image selected
+                            disabled={!postData.image}
                         >
                             Post
                         </button>

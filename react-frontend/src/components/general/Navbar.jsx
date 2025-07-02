@@ -1,18 +1,27 @@
 import petboxLogo from "../../assets/smallLogo.svg"
 import userIcon from "../../assets/person-circle-white.svg"
 import { useEffect, useState } from "react";
+import {Link} from "react-router-dom";
 
 function Navbar({ collapsed, toggleSidebar }) {
     const [username, setUsername] = useState("");
+    const [userId, setUserId] = useState("")
 
     useEffect(() => {
         fetch("http://localhost:8080/api/nav", {
             credentials: "include",
         })
             .then(res => res.json())
-            .then(data => setUsername(data.username))
-            .catch(() => setUsername(""));
+            .then(data => {
+                setUsername(data.username || "");
+                setUserId(data.userId || "");
+            })
+            .catch(() => {
+                setUsername("");
+                setUserId("");
+            });
     }, []);
+
 
     return (
         <nav className="navbar navbar-dark sticky-top"
@@ -26,16 +35,17 @@ function Navbar({ collapsed, toggleSidebar }) {
                 <span className="navbar-toggler-icon"></span>
             </button>
 
-            <a className="navbar-brand" href="/profile">
+            <Link className="navbar-brand" to={`/profile/${userId}`}>
                 <img src={`http://localhost:8080/api/pfps/${username}_pfp.jpg`}
                      onError={(e) => {
                          e.currentTarget.src = userIcon;
                          e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
                      }}
-                     width="35" height="35" className="mx-3 shadow d-inline-block align-top rounded-circle"
-                     alt="Foto do usuário"/>
+                     className="mx-3 shadow d-inline-block align-top rounded-circle"
+                     alt="Foto do usuário"
+                     style={{ width: "35px", height: "35px", objectFit: "cover" }}/>
                 {username}
-            </a>
+            </Link>
 
             <a className="navbar-brand ms-auto" href="/home">
                 PetBox

@@ -1,5 +1,6 @@
 import userIcon from "../../../../assets/person-circle.svg";
 import {useEffect, useState} from "react";
+import { Link } from "react-router-dom"
 
 function PostCard({ postData }) {
     const [response, setResponse] = useState(null);
@@ -8,7 +9,7 @@ function PostCard({ postData }) {
     useEffect(() => {
         async function fetchUserInfo() {
             try {
-                const res = await fetch("http://localhost:8080/api/poster", {
+                const res = await fetch("http://localhost:8080/api/getuser", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ userId: userId }),
@@ -30,24 +31,22 @@ function PostCard({ postData }) {
         fetchUserInfo();
     }, []);
 
-
-
     return (
         <div className="card" style={{width: "40rem", maxWidth: "100%"}}>
             <div className="card-header bg-white py-3">
                 <div className="d-flex align-items-center">
-                    <a href="/profile">
+                    <Link to={`/profile/${userId}`}>
                         <img src={`http://localhost:8080/api/pfps/${response ? response.username : "Loading..."}_pfp.jpg`}
                              onError={(e) => {
                                  e.currentTarget.src = userIcon;
                                  e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
                              }}
-                             width="35" height="35"
+                             style={{ width: "35px", height: "35px", objectFit: "cover" }}
                              className="me-3 rounded-circle shadow" alt="User profile" />
-                    </a>
-                    <a className="text-decoration-none text-reset" href="/profile">
+                    </Link>
+                    <Link className="text-decoration-none text-reset" to={`/profile/${userId}`}>
                         <h5 className="m-0">{response ? response.username : "Loading..."}</h5>
-                    </a>
+                    </Link>
                 </div>
             </div>
 

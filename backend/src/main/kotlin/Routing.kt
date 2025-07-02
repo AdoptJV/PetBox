@@ -1,6 +1,7 @@
 package com.jvdev
 import Message
 import com.jvdev.com.ChatServer.ChatServer
+import com.jvdev.com.cep.Endereco
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -10,10 +11,12 @@ import java.io.File
 import io.ktor.server.http.content.*
 import io.ktor.server.sessions.*
 import com.jvdev.com.cep.buscarEndereco
+import com.jvdev.com.cep.externalApiAvailable
 import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
 import com.jvdev.com.models.Pet
 import com.jvdev.com.models.User
+import com.jvdev.com.models.Comment
 import com.jvdev.com.models.Post
 import com.jvdev.com.models.Sex
 import io.ktor.server.websocket.*
@@ -69,7 +72,9 @@ fun Application.configureRouting() {
                     if (debug) println("não esta logado")
                     call.respond(
                         HttpStatusCode.Forbidden, mapOf(
-                            "username" to ""
+                            "username" to "",
+                            "userId" to "",
+                            "pfp" to ""
                         )
                     )
                 } else {
@@ -79,6 +84,7 @@ fun Application.configureRouting() {
                     return@get call.respond(
                         HttpStatusCode.OK, mapOf(
                             "username" to session.username,
+                            "userId" to session.id.toString(),
                             "pfp" to pfpUrl
                         )
                     )
@@ -89,6 +95,9 @@ fun Application.configureRouting() {
             }
             static("/postimg") {
                 files("src/main/resources/PostImg")
+            }
+            static("/petimg") {
+                files("src/main/resources/PetPfp")
             }
 
             get("/messages") {
@@ -149,8 +158,14 @@ fun Application.configureRouting() {
                     val user = getUserByID(uid)
                     val city = user?.address?.localidade
 
+                    println(uid)
+                    println(user)
+                    println(city)
+
                     println("Query PETs por cidade")
                     val petCityList = getPetByCity(city)
+
+                    println(petCityList)
                     val petCityJson = Json.encodeToString(petCityList)
                     if(debug) println(petCityJson)
 
@@ -158,24 +173,19 @@ fun Application.configureRouting() {
                 }
             }
 
-            get("/profilepets") {
+            post("/profilepets") {
                 if (debug) println("solicitação profilepets")
-                val session = call.sessions.get<UserSession>()
-                if (session == null) {
-                    if (debug) println("não está logado")
-                    call.respond(
-                        HttpStatusCode.Forbidden, mapOf(
-                            "username" to ""
-                        )
-                    )
-                } else {
-                    println("Query PETs por user")
-                    val petUserList = getPetByUser(session.id)
-                    val petUserJson = Json.encodeToString(petUserList)
-                    if(debug) println(petUserJson)
 
-                    call.respond(HttpStatusCode.OK, petUserJson)
-                }
+                val json = call.receive<JsonObject>()
+                val username = json["username"]?.jsonPrimitive?.content ?: "unknown"
+                val userId = getIDbyUsername(username)
+
+                println("Query PETs por user")
+                val petUserList = getPetByUser(userId)
+                val petUserJson = Json.encodeToString(petUserList)
+                if(debug) println(petUserJson)
+
+                call.respond(HttpStatusCode.OK, petUserJson)
             }
 
             get("/homeposts") {
@@ -198,27 +208,23 @@ fun Application.configureRouting() {
                 }
             }
 
-            get("/profileposts") {
+            post("/profileposts") {
                 if (debug) println("solicitação profileposts")
-                val session = call.sessions.get<UserSession>()
-                if (session == null) {
-                    if (debug) println("não está logado")
-                    call.respond(
-                        HttpStatusCode.Forbidden, mapOf(
-                            "username" to ""
-                        )
-                    )
-                } else {
-                    println("Query user posts")
-                    val postList = getPostByUser(session.id)
-                    val postJson = Json.encodeToString(postList)
-                    if(debug) println(postList)
 
-                    call.respond(HttpStatusCode.OK, postJson)
-                }
+                val json = call.receive<JsonObject>()
+                val username = json["username"]?.jsonPrimitive?.content ?: "unknown"
+                val userId = getIDbyUsername(username)
+
+                println("Query user posts")
+                val postList = getPostByUser(userId)
+                val postJson = Json.encodeToString(postList)
+                if(debug) println(postList)
+
+                call.respond(HttpStatusCode.OK, postJson)
             }
 
-            post("/poster") {
+            post("/getuser") {
+                if(debug) println("getuser request")
                 val json = call.receive<JsonObject>()
                 val userId = json["userId"]?.jsonPrimitive?.content ?: "unknown"
 
@@ -228,8 +234,57 @@ fun Application.configureRouting() {
                     put("userId", userId)
                     put("username", username)
                 }
-
+                if(debug) println(response)
                 call.respond(response)
+            }
+
+            post("/comments") {
+                val json = call.receive<JsonObject>()
+                val postID = json["postID"]?.jsonPrimitive?.intOrNull
+
+                if (postID == null) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid or missing postID"))
+                    return@post
+                }
+
+                val comments: List<Comment> = getCommentByPost(postID) ?: emptyList()
+                if(debug) println(comments.isEmpty().toString() + " " + comments)
+
+                call.respond(HttpStatusCode.OK, comments)
+            }
+
+            post("/writecomment") {
+                try {
+                    val time = System.currentTimeMillis()
+                    println("1")
+                    val json = call.receive<JsonObject>()
+                    println("2")
+                    val commentText = json["comment"]?.jsonPrimitive?.contentOrNull
+                    val post = json["post"]?.jsonPrimitive?.intOrNull
+                    val session = call.sessions.get<UserSession>()
+
+                    if(debug) println("Oi comentário")
+
+                    val comment = Comment(
+                        id = -1,
+                        post = post!!,
+                        user = session?.id!!,
+                        text = commentText!!,
+                        timestamp = time
+                    )
+
+                    if (insertComment(comment)) {
+                        if (debug) println("comentário bem sucedido")
+                        call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
+                    } else {
+                        if (debug) println("comentário mal sucedido")
+                        call.respond(HttpStatusCode.Conflict, mapOf("message" to "Erro ao comentar"))
+                    }
+
+                } catch (e: Exception) {
+                    if(debug) println("Deu pau")
+                    call.respond(mapOf("message" to "Error: ${e.message}"))
+                }
             }
 
             get("/cep-info/{cep}") {
@@ -237,7 +292,19 @@ fun Application.configureRouting() {
                 val cep = call.parameters["cep"] ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid CEP")
                 if (debug) println("cep informado: $cep")
                 try {
-                    val address = buscarEndereco(cep)
+                    val mock = Endereco(
+                        cep = "00000000",
+                        logradouro = "API fora do ar",
+                        complemento = "123",
+                        bairro = "API fora do ar",
+                        localidade = "API fora do ar",
+                        uf = "API fora do ar",
+                        ibge = "?",
+                        gia = "?",
+                        ddd = "00",
+                        siafi = "?"
+                    )
+                    val address = if(externalApiAvailable.get()) buscarEndereco(cep) else mock
                     if (debug) println("endereco obtido: $address")
                     call.respond(address)
                 } catch (e: Exception) {
@@ -352,23 +419,39 @@ fun Application.configureRouting() {
                     }
                 }
 
+                val mock = Endereco(
+                    cep = formData["cep"]!!,
+                    logradouro = "API fora do ar",
+                    complemento = "123",
+                    bairro = "API fora do ar",
+                    localidade = "API fora do ar",
+                    uf = "API fora do ar",
+                    ibge = "?",
+                    gia = "?",
+                    ddd = "00",
+                    siafi = "?"
+                )
+
+                val endereco = if(externalApiAvailable.get()) buscarEndereco(formData["cep"]!!) else mock
+                if(endereco != mock) insertAddress(endereco)
+
                 val user = User(
                     id = -1,
                     username = formData["username"]!!,
                     name = formData["name"]!!,
                     psw = formData["password"]!!,
-                    address = buscarEndereco(formData["cep"]!!),
+                    address = endereco,
                     birthday = birthdate,
                     email = formData["email"]!!,
                     phone = formData["phone"]!!,
                     description = null
                 )
 
-                if (debug) println("Created user.")
+                if (debug) println("Created user $user.")
 
                 if (profilePictureBytes != null) {
                     if (debug) println("Pfp not null")
-                    val filePath = "backend/src/main/resources/UserPfp/${formData["username"]}_pfp.jpg"
+                    val filePath = "src/main/resources/UserPfp/${formData["username"]}_pfp.jpg"
                     File(filePath).writeBytes(profilePictureBytes!!)
                     if (debug) println("Salvou foto em $filePath")
                 }
@@ -392,6 +475,7 @@ fun Application.configureRouting() {
                     multipart.forEachPart { part ->
                         when (part) {
                             is PartData.FormItem -> {
+                                if (debug) println("form")
                                 if (part.name == "caption") {
                                     caption = part.value
                                 }
@@ -400,7 +484,7 @@ fun Application.configureRouting() {
                             is PartData.FileItem -> {
                                 if (part.name == "image") {
                                     val fileName = "${time}_post.jpg"
-                                    imageFile = File("backend/src/main/resources/PostImg/$fileName")
+                                    imageFile = File("src/main/resources/PostImg/$fileName")
                                     part.streamProvider().use { input ->
                                         imageFile!!.outputStream().buffered().use { output ->
                                             input.copyTo(output)
@@ -413,6 +497,7 @@ fun Application.configureRouting() {
                         }
                         part.dispose()
                     }
+                    if (debug) println("7")
 
                     val session = call.sessions.get<UserSession>()
 
@@ -423,9 +508,6 @@ fun Application.configureRouting() {
                         caption = caption!!,
                         timestamp = time
                     )
-
-                    // 4. Validate and respond
-
                     if (insertPost(post)) {
                         if (debug) println("postagem bem sucedida")
                         call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
@@ -435,7 +517,7 @@ fun Application.configureRouting() {
                     }
 
                 } catch (e: Exception) {
-                    call.respond(mapOf("success" to false, "message" to "Error: ${e.message}"))
+                    call.respond(mapOf("message" to "Error: ${e.message}"))
                 }
             }
             get("/JSON/species") {
@@ -502,9 +584,9 @@ fun Application.configureRouting() {
 
                 if (petPictureBytes != null) {
                     val username = call.sessions.get<UserSession>()?.username ?: "unknown"
-                    val filePath = "src/main/resources/PetPfp/${username}_${id}_pfp.jpg"
+                    val filePath = "src/main/resources/PetPfp/${id}_pfp.jpg"
                     File(filePath).writeBytes(petPictureBytes!!)
-                    pet.photoUrl = "http://localhost:8080/pfps/${username}_${id}_pfp.jpg"
+                    pet.photoUrl = "http://localhost:8080/pfps/${id}_pfp.jpg"
                 }
 
                 if (success) {

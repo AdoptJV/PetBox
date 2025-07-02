@@ -46,6 +46,8 @@ fun getMessages(from: String, to: String): List<Message> {
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     val list = ArrayList<Message>()
 
+    println("Mensagem")
+
     try {
         val stmtFrom = connection.prepareStatement("SELECT id FROM USERS WHERE username = ?")
         stmtFrom.setString(1, from)
@@ -76,7 +78,7 @@ fun getMessages(from: String, to: String): List<Message> {
         while (rs.next()) {
             val content = rs.getString("content")
             val fromUserId = rs.getInt("from_user_id")
-            val timestamp = rs.getTimestamp("timestamp").time
+            val timestamp = rs.getTimestamp("timestamp").time ?: 0L
 
             val msg = if (fromUserId == fromId) {
                 Message(from = from, to = to, content = content, timestamp = timestamp)

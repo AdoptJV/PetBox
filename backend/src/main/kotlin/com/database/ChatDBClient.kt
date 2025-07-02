@@ -78,7 +78,9 @@ fun getMessages(from: String, to: String): List<Message> {
         while (rs.next()) {
             val content = rs.getString("content")
             val fromUserId = rs.getInt("from_user_id")
-            val timestamp = rs.getTimestamp("timestamp").time ?: 0L
+            val timestampValue = rs.getTimestamp("timestamp")
+            val timestamp = timestampValue?.time ?: 0L
+
 
             val msg = if (fromUserId == fromId) {
                 Message(from = from, to = to, content = content, timestamp = timestamp)

@@ -89,8 +89,20 @@ const Chat = ({ contact }) => {
     }
 
     return (
+
         <div className="container d-flex flex-column py-3" style={{ height: "calc(100vh - 65px)" }}>
-        <h2 className="mb-3">Chat com {contact.username}</h2>
+            <div className="d-flex align-items-center mb-3">
+                <img
+                    src={`http://localhost:8080/api/pfps/${contact.username}_pfp.jpg`}
+                    alt="Foto do contato"
+                    onError={(e) => {
+                        e.currentTarget.src = "/person-circle.svg" // se estiver em public/
+                    }}
+                    className="rounded-circle me-3 shadow"
+                    style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                />
+                <h4 className="mb-0">Chat com {contact.username}</h4>
+            </div>
 
             <div className="flex-grow-1 overflow-auto border rounded p-3 bg-light" style={{ minHeight: "300px" }}>
                 {messages.map((msg, idx) => {

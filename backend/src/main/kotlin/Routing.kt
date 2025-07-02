@@ -182,6 +182,7 @@ fun Application.configureRouting() {
 
                 println("Query PETs por user")
                 val petUserList = getPetByUser(userId)
+                println(petUserList)
                 val petUserJson = Json.encodeToString(petUserList)
                 if(debug) println(petUserJson)
 
@@ -484,7 +485,7 @@ fun Application.configureRouting() {
                             is PartData.FileItem -> {
                                 if (part.name == "image") {
                                     val fileName = "${time}_post.jpg"
-                                    imageFile = File("src/main/resources/PostImg/$fileName")
+                                    imageFile = File("src/main/resources/postimg/$fileName")
                                     part.streamProvider().use { input ->
                                         imageFile!!.outputStream().buffered().use { output ->
                                             input.copyTo(output)
@@ -586,7 +587,8 @@ fun Application.configureRouting() {
                     val username = call.sessions.get<UserSession>()?.username ?: "unknown"
                     val filePath = "src/main/resources/PetPfp/${id}_pfp.jpg"
                     File(filePath).writeBytes(petPictureBytes!!)
-                    pet.photoUrl = "http://localhost:8080/pfps/${id}_pfp.jpg"
+                    val photoUrl = "http://localhost:8080/pfps/${id}_pfp.jpg"
+                    updatePetPhotoUrl(id ?: -1, photoUrl)
                 }
 
                 if (success) {

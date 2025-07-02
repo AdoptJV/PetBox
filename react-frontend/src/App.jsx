@@ -8,6 +8,7 @@ import ChatPage from "./components/pages/ChatFiles/ChatPage.jsx";
 import ProtectedRoute from "./ProtectedRoutes.jsx";
 import PostPage from "./components/pages/PostFiles/PostPage.jsx";
 import ProfilePage from "./components/pages/ProfileFiles/ProfilePage.jsx";
+import PetPage from "./components/pages/PetFiles/PetPage.jsx";
 
 function App() {
 
@@ -44,7 +45,14 @@ function App() {
                         <ProfilePage/>
                     </ProtectedRoute>
                 }/>
-         </Routes>
+
+                <Route path="/pets/:petId" element={
+                    <ProtectedRoute>
+                        <PetPage/>
+                    </ProtectedRoute>
+                }/>
+
+            </Routes>
         </Router>
     );
 }

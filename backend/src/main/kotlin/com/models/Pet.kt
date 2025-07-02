@@ -1,5 +1,6 @@
 package com.jvdev.com.models
 
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 enum class Sex { MALE, FEMALE }

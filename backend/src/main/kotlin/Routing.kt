@@ -1,5 +1,6 @@
 package com.jvdev
 import Message
+import PetDto
 import com.jvdev.com.ChatServer.ChatServer
 import com.jvdev.com.cep.Endereco
 import io.ktor.server.application.*
@@ -90,14 +91,53 @@ fun Application.configureRouting() {
                     )
                 }
             }
+
             static("/pfps") {
                 files("src/main/resources/UserPfp")
             }
-            static("/postimg") {
+            static("/PostImg") {
                 files("src/main/resources/PostImg")
             }
             static("/petimg") {
                 files("src/main/resources/PetPfp")
+            }
+
+            get("/pets/{id}") {
+                val idParam = call.parameters["id"]
+                val petId = idParam?.toIntOrNull()
+                if (petId == null) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "ID inválido"))
+                    return@get
+                }
+
+                val pet = getPetByID(petId)
+                if (pet == null) {
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "Pet não encontrado"))
+                    return@get
+                }
+
+                val ownerUser = getUserByID(pet.owner)
+                if (ownerUser == null) {
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "Dono do pet não encontrado"))
+                    return@get
+                }
+
+                val dto = PetDto(
+                    id = pet.id,
+                    name = pet.name,
+                    species = pet.species,
+                    age = pet.age,
+                    castrated = pet.castrated,
+                    photoUrl = pet.photoUrl.orEmpty(),
+                    description = pet.description.orEmpty(),
+                    owner = ownerUser.username,
+                    ownerID = pet.owner
+                )
+
+                print("DATA:::")
+                print(dto)
+
+                call.respond(HttpStatusCode.OK, dto)
             }
 
             get("/messages") {
@@ -485,7 +525,7 @@ fun Application.configureRouting() {
                             is PartData.FileItem -> {
                                 if (part.name == "image") {
                                     val fileName = "${time}_post.jpg"
-                                    imageFile = File("src/main/resources/postimg/$fileName")
+                                    imageFile = File("src/main/resources/PostImg/$fileName")
                                     part.streamProvider().use { input ->
                                         imageFile!!.outputStream().buffered().use { output ->
                                             input.copyTo(output)
@@ -505,7 +545,7 @@ fun Application.configureRouting() {
                     val post = Post(
                         postID = -1,
                         ownerID = session?.id!!,
-                        imgUrl = "http://localhost:8080/api/postimg/${time}_post.jpg",
+                        imgUrl = "http://localhost:8080/api/PostImg/${time}_post.jpg",
                         caption = caption!!,
                         timestamp = time
                     )
@@ -567,6 +607,7 @@ fun Application.configureRouting() {
                 val sex = formData["sex"]!!  // depende de como você está enviando (ex: "M"/"F" ou "true"/"false")
                 val specie = formData["specie"]!!
                 val castrated = formData["castrated"]!!.toBooleanStrictOrNull() ?: false
+                val description = formData["description"] ?: null
 
                 val pet = Pet(
                     id = -1,  // se for autogerado no banco
@@ -577,7 +618,7 @@ fun Application.configureRouting() {
                     castrated = castrated,
                     owner = call.sessions.get<UserSession>()?.id ?: -1,
                     photoUrl = null,
-                    description = null.toString()
+                    description = description.toString()
                 )
                 if (debug) { println(pet) }
                 val success = insertPet(pet)

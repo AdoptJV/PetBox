@@ -17,8 +17,8 @@ fun insertPet(pet: Pet): Boolean {
     try {
         val sql = """
         INSERT INTO PETS
-        (species, sex, name, age, castrated, photoURL, owner, registered) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        (species, sex, name, age, castrated, photoURL, owner, registered, description) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
         val smtm = connection.prepareStatement(sql) ?: throw SQLException("Failed to execute SQL statement.")
         smtm.setString(1, pet.species)
@@ -29,6 +29,7 @@ fun insertPet(pet: Pet): Boolean {
         smtm.setString(6, pet.photoUrl)
         smtm.setInt(7, pet.owner)
         smtm.setDate(8, Date.valueOf(LocalDate.now()))
+        smtm.setString(9, pet.description)
 
         return smtm.executeUpdate() == 1 // verifica se uma linha foi atualizada no banco de dados
     }

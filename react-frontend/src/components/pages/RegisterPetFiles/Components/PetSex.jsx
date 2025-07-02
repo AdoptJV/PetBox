@@ -7,10 +7,12 @@ function PetSex({value, onChange}) {
     }
 
     return (
-        <div className="col-md-4">
+        <div className="col-md-5 mx-2 my-2">
+
             <label className="form-label mb-2">Sexo do Pet</label>
             <select
                 className="form-select"
+                style={{ borderRadius: "1rem" }}
                 name="sex"
                 value={value}
                 onChange={handleChange}

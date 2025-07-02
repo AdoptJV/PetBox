@@ -1,6 +1,8 @@
 package com.jvdev.com.database
 import com.jvdev.com.models.Pet
+import com.jvdev.com.models.PetID
 import com.jvdev.com.models.Sex
+import com.jvdev.com.models.UserID
 import java.sql.Date
 import java.sql.SQLException
 import java.time.LocalDate
@@ -15,7 +17,7 @@ fun insertPet(pet: Pet): Boolean {
     try {
         val sql = """
         INSERT INTO PETS
-        (specie, sex, name, age, castrated, photoURL, owner, registered) 
+        (species, sex, name, age, castrated, photoURL, owner, registered) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
         val smtm = connection.prepareStatement(sql) ?: throw SQLException("Failed to execute SQL statement.")
@@ -146,6 +148,41 @@ suspend fun getPetByUser(uid: Int?): MutableList<Map<String, String>>? {
     finally {
         connection.close()
     }
+}
+fun getPetID(petName: String, ownerId: UserID, specie: String): PetID? {
+    var petId: PetID? = null
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+
+    println(" $petName $ownerId $petId")
+
+    try {
+        val sql = """
+            SELECT PETS.id
+            FROM PETS
+            WHERE name = ? 
+            AND owner = ?
+            AND species = ?
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+        statement.setString(1, petName)
+        statement.setInt(2, ownerId)
+        statement.setString(3, specie)
+
+        val result = statement.executeQuery()
+
+        if (result.next()) {
+            petId = result.getInt("id")
+        }
+        result.close()
+        statement.close()
+    } catch (e: SQLException) {
+        e.printStackTrace()
+    } finally {
+        connection.close()
+    }
+    println(petId)
+    return petId
 }
 
 suspend fun getPetByID(id: Int): Pet? {

@@ -1,17 +1,16 @@
 import React from "react";
 
-function PetCastrated({value, onChange}) {
-
-
+function PetCastrated({ value, onChange }) {
     function handleChange(e) {
         onChange(e);
     }
 
     return (
-        <div className="col-md-4">
-            <label className="form-label mb-2">Castração</label>
+        <div className="col-md-5 mx-2 my-2">
+            <label className="form-label mb-2 ps-2">Castração</label>
             <select
-                className="form-select"
+                className="form-select ps-2"
+                style={{ borderRadius: "1rem" }}
                 name="castrated"
                 value={value}
                 onChange={handleChange}
@@ -24,4 +23,4 @@ function PetCastrated({value, onChange}) {
     );
 }
 
-export default PetCastrated
+export default PetCastrated;

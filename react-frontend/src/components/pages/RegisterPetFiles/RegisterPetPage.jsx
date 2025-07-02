@@ -7,7 +7,8 @@ import PetSpecie from "./Components/PetSpecie.jsx";
 import PetCastrated from "./Components/PetCastrated.jsx";
 import PetPfp from "./Components/PetPfp.jsx";
 // import PetPfp from "./Components/PetPfp.jsx"; // supondo que você vai ter isso também
-import clouds from "../../../assets/clouds.png";
+import clouds from "../../../assets/clouds.png"; // mesma imagem de fundo
+import PetDescription from "./Components/PetDescription.jsx";
 import Bars from "../../general/Bars.jsx"; // mesma imagem de fundo
 
 function RegisterPetPage() {
@@ -18,6 +19,7 @@ function RegisterPetPage() {
         sex: "",
         specie: "",
         castrated: false,
+        description: ""
     });
     const [profilePicture, setProfilePicture] = useState(null);
     const [response, setResponse] = useState("");
@@ -86,9 +88,10 @@ function RegisterPetPage() {
                             <PetSex value={formData.sex} onChange={handleChange} />
                             <PetSpecie value={formData.specie} onChange={handleChange} />
                             <PetCastrated value={formData.castrated} onChange={handleChange} />
+                            <PetDescription value={formData.description} onChange={handleChange} />
                             <PetPfp onChange={setProfilePicture} />
                         </div>
-
+                        
                         <div className="my-3 d-flex justify-content-center">
                             <button type="submit" className="btn btn-primary">Registrar Pet</button>
                         </div>

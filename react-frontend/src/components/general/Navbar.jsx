@@ -1,11 +1,11 @@
-import petboxLogo from "../../assets/smallLogo.svg"
-import userIcon from "../../assets/person-circle-white.svg"
+import petboxLogo from "../../assets/smallLogo.svg";
+import userIcon from "../../assets/person-circle-white.svg";
 import { useEffect, useState } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Navbar({ collapsed, toggleSidebar }) {
     const [username, setUsername] = useState("");
-    const [userId, setUserId] = useState("")
+    const [userId, setUserId] = useState("");
 
     useEffect(() => {
         fetch("http://localhost:8080/api/nav", {
@@ -22,42 +22,57 @@ function Navbar({ collapsed, toggleSidebar }) {
             });
     }, []);
 
-
     return (
-        <nav className="navbar navbar-dark sticky-top"
+        <nav className="navbar navbar-dark sticky-top shadow-sm"
              style={{
-                 position: "sticky",
-                 width: "100%",
-                 backgroundColor: "#a1c8ff",
-                 fontWeight: "bold"
-             }}>
-            <button onClick={toggleSidebar} className="navbar-toggler mx-2" type="button">
-                <span className="navbar-toggler-icon"></span>
-            </button>
+                 backgroundColor: "#6ea8fe",
+                 fontWeight: "bold",
+                 paddingLeft: "1rem",
+                 paddingRight: "1rem"
+             }}
+        >
+            <div className="d-flex align-items-center">
+                <button onClick={toggleSidebar} className="navbar-toggler me-2" type="button">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
 
-            <Link className="navbar-brand" to={`/profile/${userId}`}>
-                <img src={`http://localhost:8080/api/pfps/${username}_pfp.jpg`}
-                     onError={(e) => {
-                         e.currentTarget.src = userIcon;
-                         e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
-                     }}
-                     className="mx-3 shadow d-inline-block align-top rounded-circle"
-                     alt="Foto do usuário"
-                     style={{ width: "35px", height: "35px", objectFit: "cover" }}/>
-                {username}
-            </Link>
+                <a className="navbar-brand d-flex align-items-center" href="/home">
+                    <img
+                        src={petboxLogo}
+                        width="35"
+                        height="35"
+                        className="me-2"
+                        alt="Logo Petbox"
+                        style={{
+                            filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))",
+                            transform: "translateZ(0)"
+                        }}
+                    />
+                    <span className="fs-5 text-white">PetBox</span>
+                </a>
+            </div>
 
-            <a className="navbar-brand ms-auto" href="/home">
-                PetBox
-                <img src={petboxLogo} width="35" height="35" className="mx-2 d-inline-block align-top" alt="Logo Petbox"
-                     style={{
-                         filter: "drop-shadow(0 0px 1px rgba(0,0,0,0.2))" +
-                             "drop-shadow(0 1px 2px rgba(0,0,0,0.2)) " +
-                             "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
-                         transform: "translateZ(0)"
-                     }}
+            <Link
+                className="navbar-brand d-flex align-items-center ms-auto"
+                to={`/profile/${userId}`}
+            >
+                <img
+                    src={`http://localhost:8080/api/pfps/${username}_pfp.jpg`}
+                    onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = userIcon;
+                    }}
+                    alt="Foto do usuário"
+                    className="rounded-circle shadow-sm me-2"
+                    style={{
+                        width: "35px",
+                        height: "35px",
+                        objectFit: "cover",
+                        border: "2px solid white"
+                    }}
                 />
-            </a>
+                <span className="text-white text-capitalize">{username}</span>
+            </Link>
         </nav>
     );
 }

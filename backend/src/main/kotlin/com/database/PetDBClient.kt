@@ -18,8 +18,8 @@ fun insertPet(pet: Pet): Boolean {
     try {
         val sql = """
         INSERT INTO PETS
-        (species, sex, name, age, castrated, photoURL, owner, registered) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        (species, sex, name, age, castrated, photoURL, owner, registered, description) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
         val smtm = connection.prepareStatement(sql) ?: throw SQLException("Failed to execute SQL statement.")
         smtm.setString(1, pet.species)
@@ -30,6 +30,7 @@ fun insertPet(pet: Pet): Boolean {
         smtm.setString(6, pet.photoUrl)
         smtm.setInt(7, pet.owner)
         smtm.setDate(8, Date.valueOf(LocalDate.now()))
+        smtm.setString(9, pet.description)
 
         return smtm.executeUpdate() == 1 // verifica se uma linha foi atualizada no banco de dados
     }
@@ -108,7 +109,7 @@ suspend fun getPetByCity(city: String?): MutableList<Map<String?, String?>>? {
     }
 }
 
-suspend fun getPetByUser(uid: Int?): MutableList<Map<String, String>>? {
+suspend fun getPetByUser(uid: Int?): MutableList<Map<String, String?>>? {
     if(uid == -1) return null
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     try {
@@ -123,7 +124,7 @@ suspend fun getPetByUser(uid: Int?): MutableList<Map<String, String>>? {
 
         val resultSet = statement.executeQuery()
 
-        val returnList : MutableList<Map<String, String>> = mutableListOf()
+        val returnList : MutableList<Map<String, String?>> = mutableListOf()
         while (resultSet.next()) {
             val name = resultSet.getString("name")
             val id = resultSet.getInt("id")
@@ -232,6 +233,7 @@ suspend fun getPetByID(id: Int): Pet? {
     }
 }
 
+
 suspend fun getPetByFilters(filters: Map<String?, String?>): MutableList<Pet>? {
     if (filters.isEmpty()) return null
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
@@ -304,6 +306,29 @@ suspend fun getPetByFilters(filters: Map<String?, String?>): MutableList<Pet>? {
     } catch (e: SQLException) {
         e.printStackTrace()
         return null
+    } finally {
+        connection.close()
+    }
+}
+
+fun updatePetPhotoUrl(petId: Int, url: String): Boolean {
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+
+    try {
+        val sql = """
+            UPDATE PETS
+            SET photoURL = ?
+            WHERE id = ?
+        """.trimIndent()
+
+        val stmt = connection.prepareStatement(sql)
+        stmt.setString(1, url)
+        stmt.setInt(2, petId)
+
+        return stmt.executeUpdate() == 1
+    } catch (e: SQLException) {
+        e.printStackTrace()
+        return false
     } finally {
         connection.close()
     }

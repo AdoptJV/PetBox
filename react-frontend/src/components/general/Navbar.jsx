@@ -41,8 +41,9 @@ function Navbar({ collapsed, toggleSidebar }) {
                          e.currentTarget.src = userIcon;
                          e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
                      }}
-                     width="35" height="35" className="mx-3 shadow d-inline-block align-top rounded-circle"
-                     alt="Foto do usuário"/>
+                     className="mx-3 shadow d-inline-block align-top rounded-circle"
+                     alt="Foto do usuário"
+                     style={{ width: "35px", height: "35px", objectFit: "cover" }}/>
                 {username}
             </Link>
 

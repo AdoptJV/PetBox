@@ -44,8 +44,9 @@ function ProfilePage() {
                              e.currentTarget.src = userIcon;
                              e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
                          }}
-                         width="200" height="200" className="mx-3 shadow d-inline-block align-top rounded-circle"
-                         alt="Foto do usuário"/>
+                         className="mx-3 shadow d-inline-block align-top rounded-circle"
+                         alt="Foto do usuário"
+                    style={{ width: "200px", height: "200px", objectFit: "cover" }}/>
                     <h1 className="my-3">{response ? response.username : "Loading..."}</h1>
                 </div>
                 <hr className="mx-3"/>

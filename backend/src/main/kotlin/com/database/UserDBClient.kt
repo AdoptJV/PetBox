@@ -192,7 +192,7 @@ suspend fun getUserByID(id: Int): User? {
                 username = username,
                 name = name,
                 psw = password,
-                address = null,
+                address = getAddressByCep(cep),
                 birthday = LocalDate.parse(birthday, DateTimeFormatter.ISO_DATE),
                 email = email,
                 phone = phone,

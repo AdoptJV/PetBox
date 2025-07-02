@@ -37,8 +37,9 @@ function Comment({comment}) {
                          e.currentTarget.src = userIcon;
                          e.currentTarget.className = "d-inline-block align-top rounded-circle shadow";
                      }}
-                     width="35" height="35" className="shadow d-inline-block align-top rounded-circle"
-                     alt="Foto do usuário"/>
+                     className="shadow d-inline-block align-top rounded-circle"
+                     alt="Foto do usuário"
+                     style={{ width: "35px", height: "35px", objectFit: "cover" }}/>
             </Link>
             <div className="d-flex flex-column">
                 <Link to={`/profile/${comment.user}`} className="text-decoration-none h6 text-start">{response ? response.username : "Loading..."}</Link>

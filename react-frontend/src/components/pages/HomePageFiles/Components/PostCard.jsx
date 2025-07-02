@@ -41,7 +41,7 @@ function PostCard({ postData }) {
                                  e.currentTarget.src = userIcon;
                                  e.currentTarget.className = "mx-3 d-inline-block align-top rounded-circle shadow";
                              }}
-                             width="35" height="35"
+                             style={{ width: "35px", height: "35px", objectFit: "cover" }}
                              className="me-3 rounded-circle shadow" alt="User profile" />
                     </Link>
                     <Link className="text-decoration-none text-reset" to={`/profile/${userId}`}>

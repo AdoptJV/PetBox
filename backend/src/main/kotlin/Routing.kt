@@ -473,6 +473,7 @@ fun Application.configureRouting() {
                     multipart.forEachPart { part ->
                         when (part) {
                             is PartData.FormItem -> {
+                                if (debug) println("form")
                                 if (part.name == "caption") {
                                     caption = part.value
                                 }
@@ -481,7 +482,7 @@ fun Application.configureRouting() {
                             is PartData.FileItem -> {
                                 if (part.name == "image") {
                                     val fileName = "${time}_post.jpg"
-                                    imageFile = File("backend/src/main/resources/PostImg/$fileName")
+                                    imageFile = File("src/main/resources/PostImg/$fileName")
                                     part.streamProvider().use { input ->
                                         imageFile!!.outputStream().buffered().use { output ->
                                             input.copyTo(output)
@@ -494,6 +495,7 @@ fun Application.configureRouting() {
                         }
                         part.dispose()
                     }
+                    if (debug) println("7")
 
                     val session = call.sessions.get<UserSession>()
 
@@ -504,7 +506,6 @@ fun Application.configureRouting() {
                         caption = caption!!,
                         timestamp = time
                     )
-
                     if (insertPost(post)) {
                         if (debug) println("postagem bem sucedida")
                         call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
@@ -514,7 +515,7 @@ fun Application.configureRouting() {
                     }
 
                 } catch (e: Exception) {
-                    call.respond(mapOf("success" to false, "message" to "Error: ${e.message}"))
+                    call.respond(mapOf("message" to "Error: ${e.message}"))
                 }
             }
 

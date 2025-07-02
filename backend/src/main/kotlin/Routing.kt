@@ -239,7 +239,6 @@ fun Application.configureRouting() {
             post("/comments") {
                 val json = call.receive<JsonObject>()
                 val postID = json["postID"]?.jsonPrimitive?.intOrNull
-                if(debug) println("COMMENTING $postID")
 
                 if (postID == null) {
                     call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid or missing postID"))
@@ -250,6 +249,40 @@ fun Application.configureRouting() {
                 if(debug) println(comments.isEmpty().toString() + " " + comments)
 
                 call.respond(HttpStatusCode.OK, comments)
+            }
+
+            post("/writecomment") {
+                try {
+                    val time = System.currentTimeMillis()
+                    println("1")
+                    val json = call.receive<JsonObject>()
+                    println("2")
+                    val commentText = json["comment"]?.jsonPrimitive?.contentOrNull
+                    val post = json["post"]?.jsonPrimitive?.intOrNull
+                    val session = call.sessions.get<UserSession>()
+
+                    if(debug) println("Oi comentário")
+
+                    val comment = Comment(
+                        id = -1,
+                        post = post!!,
+                        user = session?.id!!,
+                        text = commentText!!,
+                        timestamp = time
+                    )
+
+                    if (insertComment(comment)) {
+                        if (debug) println("comentário bem sucedido")
+                        call.respond(HttpStatusCode.OK, mapOf("message" to "Sucesso"))
+                    } else {
+                        if (debug) println("comentário mal sucedido")
+                        call.respond(HttpStatusCode.Conflict, mapOf("message" to "Erro ao comentar"))
+                    }
+
+                } catch (e: Exception) {
+                    if(debug) println("Deu pau")
+                    call.respond(mapOf("message" to "Error: ${e.message}"))
+                }
             }
 
             get("/cep-info/{cep}") {
@@ -471,8 +504,6 @@ fun Application.configureRouting() {
                         caption = caption!!,
                         timestamp = time
                     )
-
-                    // 4. Validate and respond
 
                     if (insertPost(post)) {
                         if (debug) println("postagem bem sucedida")

@@ -15,7 +15,7 @@ fun insertComment(comment: Comment): Boolean {
     val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
     try {
         val sql = """
-        INSERT INTO COMMENT
+        INSERT INTO COMMENTS
         (post, user, text, timestamp) 
         VALUES (?, ?, ?, ?)
         """.trimIndent()
@@ -63,6 +63,7 @@ suspend fun getCommentByPost(pid : Int): MutableList<Comment>? {
         SELECT *
         FROM COMMENTS
         WHERE post LIKE ?
+        ORDER BY timestamp DESC
         """.trimIndent()
 
         val statement = connection.prepareStatement(sql)

@@ -30,7 +30,7 @@ function Comment({comment}) {
     }, []);
 
     return (
-        <div className="my-2 d-flex flex-row ">
+        <div className="my-2 d-flex flex-row">
             <Link to={`/profile/${comment.user}`} className="justify-content-center mx-3">
                 <img src={`http://localhost:8080/api/pfps/${response ? response.username : "Loading..."}_pfp.jpg`}
                      onError={(e) => {
@@ -42,7 +42,9 @@ function Comment({comment}) {
             </Link>
             <div className="d-flex flex-column">
                 <Link to={`/profile/${comment.user}`} className="text-decoration-none h6 text-start">{response ? response.username : "Loading..."}</Link>
-                <div className="text-sm-start">{comment.text}</div>
+                <div className="text-sm-start" style={{ wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
+                    {comment.text}
+                </div>
             </div>
         </div>
     )

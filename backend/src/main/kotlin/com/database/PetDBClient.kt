@@ -5,6 +5,7 @@ import com.jvdev.com.models.Sex
 import com.jvdev.com.models.UserID
 import java.sql.Date
 import java.sql.SQLException
+import java.sql.Types
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -228,6 +229,84 @@ suspend fun getPetByID(id: Int): Pet? {
         return null
     }
     finally {
+        connection.close()
+    }
+}
+
+
+suspend fun getPetByFilters(filters: Map<String?, String?>): MutableList<Pet>? {
+    if (filters.isEmpty()) return null
+    val connection = connectToDatabase() ?: throw SQLException("Failed to connect to database.")
+
+    try {
+        val sql = """
+            SELECT *
+            FROM PETS
+            WHERE (? IS NULL OR sex LIKE ?)
+              AND (? IS NULL OR age >= ?)
+              AND (? IS NULL OR age <= ?)
+              AND (? IS NULL OR castrated LIKE ?)
+              AND (? IS NULL OR species LIKE ?)
+        """.trimIndent()
+
+        val statement = connection.prepareStatement(sql)
+
+        val sex = filters["sex"]?.takeIf { it.isNotBlank() && it != "Qualquer" }
+        val minAge = filters["minAge"]?.takeIf { it.isNotBlank() }
+        val maxAge = filters["maxAge"]?.takeIf { it.isNotBlank() }
+        val castratedStr = filters["castrated"]?.takeIf { it.isNotBlank() && it != "Não Especificar" }
+        val castratedBool = castratedStr?.lowercase()?.toBooleanStrictOrNull()
+        val species = filters["specie"]?.takeIf { it.isNotBlank() && it != "Qualquer" }
+
+        var i = 1
+        statement.setString(i++, sex)
+        statement.setString(i++, sex)
+        statement.setString(i++, minAge)
+        statement.setInt(i++, minAge?.toIntOrNull() ?: 0)
+        statement.setString(i++, maxAge)
+        statement.setInt(i++, maxAge?.toIntOrNull() ?: Int.MAX_VALUE)
+        statement.setString(i++, castratedStr)
+        if (castratedBool != null)  statement.setBoolean(i++, castratedBool)
+        else  statement.setNull(i++, Types.BOOLEAN)
+        statement.setString(i++, species)
+        statement.setString(i++, species)
+
+        val resultSet = statement.executeQuery()
+
+        val returnList: MutableList<Pet> = mutableListOf()
+        while (resultSet.next()) {
+            val id = resultSet.getInt("id")
+            val name = resultSet.getString("name")
+            val sexB = resultSet.getBoolean("sex")
+            val age = resultSet.getInt("age")
+            val castratedVal = resultSet.getBoolean("castrated")
+            val photoURL = resultSet.getString("photoURL")
+            val owner = resultSet.getInt("owner")
+            val speciesVal = resultSet.getString("species")
+            val description = resultSet.getString("description")
+
+            val sexEnum = if (sexB) Sex.MALE else Sex.FEMALE
+
+            returnList.add(
+                Pet(
+                    id = id,
+                    species = speciesVal,
+                    sex = sexEnum,
+                    age = age,
+                    castrated = castratedVal,
+                    photoUrl = photoURL,
+                    owner = owner,
+                    name = name,
+                    description = description
+                )
+            )
+        }
+
+        return if (returnList.isEmpty()) null else returnList
+    } catch (e: SQLException) {
+        e.printStackTrace()
+        return null
+    } finally {
         connection.close()
     }
 }

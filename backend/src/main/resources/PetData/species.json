@@ -2,7 +2,7 @@
   "especie": [
     {
       "id": 1,
-      "nome": "cachorro",
+      "nome": "Cachorro",
       "tipos": [
         "pequeno porte",
         "médio porte",
@@ -11,7 +11,7 @@
     },
     {
       "id": 2,
-      "nome": "gato",
+      "nome": "Gato",
       "tipos": [
         "pelo curto",
         "pelo médio",
@@ -21,12 +21,12 @@
     },
     {
       "id": 3,
-      "nome": "coelho",
+      "nome": "Coelho",
       "tipos": []
     },
     {
       "id": 4,
-      "nome": "roedor",
+      "nome": "Roedor",
       "tipos": [
         "porquinho-da-índia",
         "hamster",
@@ -38,7 +38,7 @@
     },
     {
       "id": 5,
-      "nome": "pássaro",
+      "nome": "Pássaro",
       "tipos": [
         "periquito",
         "papagaio",
@@ -52,7 +52,7 @@
     },
     {
       "id": 6,
-      "nome": "peixe",
+      "nome": "Peixe",
       "tipos": [
         "água doce",
         "água salgada"
@@ -60,7 +60,7 @@
     },
     {
       "id": 7,
-      "nome": "réptil",
+      "nome": "Réptil",
       "tipos": [
         "jabuti",
         "tartaruga",

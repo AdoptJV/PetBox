@@ -6,6 +6,7 @@ data class PetDto(
     val name: String,
     val species: String,
     val age: Int,
+    val sex: String,
     val castrated: Boolean,
     val photoUrl: String,
     val description: String,

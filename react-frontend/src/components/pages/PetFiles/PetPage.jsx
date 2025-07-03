@@ -32,22 +32,24 @@ function PetPage() {
             <div className="container d-flex justify-content-center align-items-center my-5">
                 <div className="card p-4 shadow rounded-4" style={{ maxWidth: '600px', width: '100%' }}>
                     <div className="text-center">
-                        <img
-                            src={`http://localhost:8080/api/petimg/${petId}_pfp.jpg`}
-                            onError={(e) => { e.currentTarget.src = userIcon }}
-                            className="rounded-circle shadow mb-3"
-                            alt="Foto do pet"
-                            style={{ width: '180px', height: '180px', objectFit: 'cover' }}
-                        />
-                        <h2 className="fw-bold">{pet.name}</h2>
-                        <div className="text-center mt-2">
-                            <span className="text-muted">Dono: </span>
-                            <Link
-                                to={`/profile/${pet.ownerID}`}
-                                className="fw-semibold text-decoration-none"
-                            >
-                                {pet.owner}
-                            </Link>
+                        <div className="text-center">
+                            <img
+                                src={`http://localhost:8080/api/petimg/${petId}_pfp.jpg`}
+                                onError={(e) => { e.currentTarget.src = userIcon }}
+                                className="rounded-4 shadow mb-3"
+                                alt="Foto do pet"
+                                style={{ width: '200px', height: '200px', objectFit: 'cover', borderRadius: '1rem' }}
+                            />
+                            <h2 className="fw-bold">{pet.name}</h2>
+                            <div className="text-center mt-2">
+                                <span className="text-muted">Dono: </span>
+                                <Link
+                                    to={`/profile/${pet.ownerID}`}
+                                    className="fw-semibold text-decoration-none"
+                                >
+                                    {pet.owner}
+                                </Link>
+                            </div>
                         </div>
                     </div>
 
@@ -65,6 +67,10 @@ function PetPage() {
                         <li className="list-group-item d-flex justify-content-between">
                             <strong>Castrado:</strong>
                             <span>{pet.castrated ? 'Sim' : 'Não'}</span>
+                        </li>
+                        <li className="list-group-item d-flex justify-content-between">
+                            <strong>Sexo:</strong>
+                            <span>{pet.sex}</span>
                         </li>
                     </ul>
 

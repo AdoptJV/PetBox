@@ -6,13 +6,11 @@ import PetSex from "./Components/PetSex.jsx";
 import PetSpecie from "./Components/PetSpecie.jsx";
 import PetCastrated from "./Components/PetCastrated.jsx";
 import PetPfp from "./Components/PetPfp.jsx";
-// import PetPfp from "./Components/PetPfp.jsx"; // supondo que você vai ter isso também
-import clouds from "../../../assets/clouds.png"; // mesma imagem de fundo
 import PetDescription from "./Components/PetDescription.jsx";
-import Bars from "../../general/Bars.jsx"; // mesma imagem de fundo
+import Bars from "../../general/Bars.jsx";
+import clouds from "../../../assets/clouds.png";
 
 function RegisterPetPage() {
-    console.log("RegisterPetPage");
     const [formData, setFormData] = useState({
         name: "",
         age: "",
@@ -31,12 +29,10 @@ function RegisterPetPage() {
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));
-        console.log(formData);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Pet form submitted:", formData);
         try {
             const formPayload = new FormData();
             for (const key in formData) {
@@ -66,43 +62,89 @@ function RegisterPetPage() {
 
     return (
         <Bars>
+            {/* Adicionando a animação global para o fadeInContent */}
+            <style>{`
+                @keyframes fadeInContent {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
+
             <div
                 className="d-flex justify-content-center align-items-center"
                 style={{
+                    position: "relative",  // importante para overlay funcionar
                     backgroundImage: `url(${clouds})`,
                     backgroundColor: "#a1c8ff",
                     minHeight: "calc(100vh - 65px)",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat"
+                    backgroundRepeat: "no-repeat",
                 }}
             >
+                {/* Overlay escurecido */}
                 <div
-                    className="py-4 w-50 card shadow rounded-4"
-                    style={{ backgroundColor: "#f3f3f3" }}
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        backgroundColor: "rgba(110,110,110,0.25)", // mesma cor do landing
+                        zIndex: 0,
+                    }}
+                />
+
+                <div
+                    className="card p-4 shadow-lg rounded-4"
+                    style={{
+                        backgroundColor: "#ffffffcc",
+                        maxWidth: "750px",
+                        width: "90%",
+                        position: "relative", // para ficar acima do overlay
+                        zIndex: 1,
+                        animation: "fadeInContent 1s ease forwards"  // animação aplicada aqui
+                    }}
                 >
+                    <h2 className="text-center mb-4 fw-bold text-primary">Cadastro do Pet</h2>
                     <form className="container" onSubmit={handleSubmit}>
-                        <div className="d-flex flex-row justify-content-start flex-wrap">
-                            <PetName value={formData.name} onChange={handleChange} />
-                            <PetAge value={formData.age} onChange={handleChange} />
-                            <PetSex value={formData.sex} onChange={handleChange} />
-                            <PetSpecie value={formData.specie} onChange={handleChange} />
-                            <PetCastrated value={formData.castrated} onChange={handleChange} />
-                            <PetDescription value={formData.description} onChange={handleChange} />
-                            <PetPfp onChange={setProfilePicture} />
-                        </div>
-                        
-                        <div className="my-3 d-flex justify-content-center">
-                            <button type="submit" className="btn btn-primary">Registrar Pet</button>
+                        <div className="row gy-3">
+                            <div className="col-md-6">
+                                <PetName value={formData.name} onChange={handleChange} />
+                            </div>
+                            <div className="col-md-6">
+                                <PetAge value={formData.age} onChange={handleChange} />
+                            </div>
+                            <div className="col-md-6">
+                                <PetSex value={formData.sex} onChange={handleChange} />
+                            </div>
+                            <div className="col-md-6">
+                                <PetSpecie value={formData.specie} onChange={handleChange} />
+                            </div>
+                            <div className="col-md-6">
+                                <PetCastrated value={formData.castrated} onChange={handleChange} />
+                            </div>
+                            <div className="col-md-6">
+                                <PetPfp onChange={setProfilePicture} />
+                            </div>
+                            <div className="col-12">
+                                <PetDescription value={formData.description} onChange={handleChange} />
+                            </div>
                         </div>
 
-                        {response && <div className="alert alert-info mt-3">{response}</div>}
+                        <div className="mt-4 d-flex justify-content-center">
+                            <button type="submit" className="btn btn-lg btn-primary px-5">
+                                Registrar Pet
+                            </button>
+                        </div>
+
+                        {response && (
+                            <div className="alert alert-warning text-center mt-4">
+                                {response}
+                            </div>
+                        )}
                     </form>
                 </div>
             </div>
         </Bars>
     );
-
 }
 
 export default RegisterPetPage;

@@ -13,9 +13,13 @@ function LandingPage() {
             />
             <style>{`
         html, body {
-          margin: 0; padding: 0; height: 100%; overflow-x: hidden;
+          margin: 0; 
+          padding: 0; 
+          height: 100%; 
+          overflow-x: hidden;
           font-family: 'Poppins', sans-serif;
           background-color: #a1c8ff;
+          font-size: 16px; /* Base font size for rem units */
         }
         @keyframes fadeInContent {
           from { opacity: 0; transform: translateY(20px); }
@@ -39,7 +43,7 @@ function LandingPage() {
                     overflowY: "hidden",
                 }}
             >
-                {/* Mesma overlay para escurecer o fundo */}
+                {/* Overlay para escurecer o fundo */}
                 <div
                     style={{
                         position: "absolute",
@@ -52,22 +56,30 @@ function LandingPage() {
                 {/* Card container */}
                 <div
                     style={{
-                        position: "relative",
+                        display: "flex",
                         zIndex: 1,
-                        backgroundColor: "rgba(243, 243, 243, 0.95)", // mesma cor card
                         borderRadius: "2rem",
-                        padding: "2rem 2.5rem",
-                        maxWidth: "480px",
-                        width: "90%",
+                        padding: "4vh 5vw", // Using viewport units
+                        width: "90%", // Percentage of parent
+                        maxWidth: "90vw", // Viewport width limit
+                        minHeight: "80vh", // Viewport height
                         boxSizing: "border-box",
-                        boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
                         textAlign: "center",
                         animation: "fadeInContent 1s ease forwards",
+                        justifyContent: "center",
+                        alignItems: "center",
                     }}
                 >
-                    <LandingLogo />
+                    <div style={{
+                        width: "50%",
+                        marginBottom: "4vh",
+                    }}>
+                        <LandingLogo />
+                    </div>
 
-                    <div style={{ marginTop: "2.5rem" }}>
+                    <div style={{
+                        width: "50%",
+                    }}>
                         <LandingMenu />
                     </div>
                 </div>

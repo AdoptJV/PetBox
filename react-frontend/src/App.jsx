@@ -10,6 +10,7 @@ import PostPage from "./components/pages/PostFiles/PostPage.jsx";
 import ProfilePage from "./components/pages/ProfileFiles/ProfilePage.jsx";
 import PetPage from "./components/pages/PetFiles/PetPage.jsx";
 import SearchPage from "./components/pages/SearchFiles/SearchPage.jsx";
+import ONGPage from "./components/pages/ONGFiles/ONGPage.jsx";
 
 function App() {
 
@@ -53,14 +54,27 @@ function App() {
                     </ProtectedRoute>
                 }/>
 
-            </Routes>
+                <Route path="/ongs" element={
+                    <ProtectedRoute>
+                        <ONGPage/>
+                    </ProtectedRoute>
+                }
+                />
+
+                <Route path="/settings" element={
+                    <ProtectedRoute>
+                        <ONGPage/>
+                    </ProtectedRoute>
+                }
+                />
 
                 <Route path="/search" element={
                     <ProtectedRoute>
                         <SearchPage/>
                     </ProtectedRoute>
                 }/>
-         </Routes>
+
+            </Routes>
         </Router>
     );
 }

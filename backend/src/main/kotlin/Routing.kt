@@ -126,6 +126,7 @@ fun Application.configureRouting() {
                     id = pet.id,
                     name = pet.name,
                     species = pet.species,
+                    sex = if (pet.sex == Sex.MALE) "Macho" else "Fêmea",
                     age = pet.age,
                     castrated = pet.castrated,
                     photoUrl = pet.photoUrl.orEmpty(),

@@ -18,10 +18,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     configureSecurity()
     configureSessions()
-    install(ContentNegotiation) {
-        json()
-    }
-    install(WebSockets)
+    install(ContentNegotiation) { json() }
     install(CORS) {
         anyHost()   // APAGAR ESSA LINHA DEPOIS!!!
         allowHost("localhost:8080", schemes = listOf("http", "https"))

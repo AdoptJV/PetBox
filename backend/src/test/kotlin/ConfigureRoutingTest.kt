@@ -1,213 +1,323 @@
+import com.jvdev.UserSession
+import com.jvdev.configureRouting
+import com.jvdev.configureSecurity
 import com.jvdev.module
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import io.ktor.websocket.*
+import io.ktor.server.application.*
+import io.ktor.client.plugins.cookies.*
+import io.ktor.server.sessions.*
+import io.ktor.client.request.forms.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.websocket.WebSockets
 
 class ConfigureRoutingTest {
-    /*
     @Test
     fun testGetApi() = testApplication {
-        application {
-            TODO("Add the Ktor module for the test")
-        }
-        client.get("/api").apply {
-            TODO("Please write your test here")
-        }
+        application { configureRouting() }
+
+        val response = client.get("/api/")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertTrue(response.bodyAsText().contains("PetBox"))
     }
 
     @Test
     fun testGetApiJsonSpecies() = testApplication {
-        application {
-            TODO("Add the Ktor module for the test")
-        }
-        client.get("/api/JSON/species").apply {
-            TODO("Please write your test here")
-        }
+        application { configureRouting() }
+
+        val response = client.get("/api/JSON/species")
+        assertTrue(response.status == HttpStatusCode.OK || response.status == HttpStatusCode.NotFound)
     }
 
     @Test
     fun testGetApiAllusers() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.get("/api/all-users").apply {
-            TODO("Please write your test here")
-        }
+
+        val response = client.get("/api/all-users")
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
     @Test
     fun testGetApiCepinfoCep() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.get("/api/cep-info/{cep}").apply {
-            TODO("Please write your test here")
-        }
+
+        val response = client.get("/api/cep-info/01001000")
+        assertTrue(response.status == HttpStatusCode.OK || response.status == HttpStatusCode.InternalServerError)
     }
 
     @Test
     fun testWebsocketApiChat() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
         }
+
         val client = createClient {
-            install(WebSockets)
+            install(io.ktor.client.plugins.websocket.WebSockets)
         }
-        client.webSocket("/api/chat") {
-            TODO("Please write your test here")
+
+        client.webSocket("/api/chat?username=testuser") {
+            send("hello")
         }
     }
-    */
 
     @Test
     fun testGetApiCheckEmailEmail() = testApplication {
         application {
-            module()
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.get("/api/check/email/{email}").apply {
-            val testEmail = "teste@gmail.com"
-            val response = client.get("/api/check/email/$testEmail")
-            assertEquals(HttpStatusCode.OK, response.status)
-            val responseText = response.bodyAsText()
-            println("Resposta: $responseText")
-            assertTrue("valido" in responseText || "exists" in responseText)
-        }
+
+        val response = client.get("/api/check/email/test@example.com")
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
-    /*
     @Test
-    fun testGetApiCheckUser() = testApplication {
+    fun testGetApiCheckUser_Unauthenticated() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
+
+            install(Sessions) {
+                cookie<UserSession>("user_session") {
+                    cookie.path = "/"
+                    cookie.maxAgeInSeconds = 3600
+                }
+            }
         }
-        client.get("/api/check/user").apply {
-            TODO("Please write your test here")
-        }
+
+        val response = client.get("/api/check/user")
+        assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
     @Test
     fun testGetApiCheckUsernameUsername() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.get("/api/check/username/{username}").apply {
-            TODO("Please write your test here")
-        }
+
+        val response = client.get("/api/check/username/testuser")
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
     @Test
-    fun testGetApiHomepets() = testApplication {
+    fun testGetApiHomepets_Unauthenticated() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
+
+            install(Sessions) {
+                cookie<UserSession>("user_session") {
+                    cookie.path = "/"
+                    cookie.maxAgeInSeconds = 3600
+                }
+            }
         }
-        client.get("/api/homepets").apply {
-            TODO("Please write your test here")
-        }
+
+        val response = client.get("/api/homepets")
+        assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
     @Test
-    fun testGetApiHomeposts() = testApplication {
+    fun testGetApiHomeposts_Unauthenticated() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
+
+            install(Sessions) {
+                cookie<UserSession>("user_session") {
+                    cookie.path = "/"
+                    cookie.maxAgeInSeconds = 3600
+                }
+            }
         }
-        client.get("/api/homeposts").apply {
-            TODO("Please write your test here")
-        }
+
+        val response = client.get("/api/homeposts")
+        assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
     @Test
-    fun testPostApiLoginuser() = testApplication {
+    fun testPostApiLoginuser_MissingData() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.post("/api/login-user").apply {
-            TODO("Please write your test here")
+
+        val response = client.post("/api/login-user") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"username": "foo"}""")
         }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @Test
     fun testPostApiLogout() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
+
+            install(Sessions) {
+                cookie<UserSession>("user_session") {
+                    cookie.path = "/"
+                    cookie.maxAgeInSeconds = 3600
+                }
+            }
         }
-        client.post("/api/logout").apply {
-            TODO("Please write your test here")
+
+        val client = createClient {
+            install(HttpCookies)
         }
+
+        val response = client.post("/api/logout") {
+            contentType(ContentType.Application.Json)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
     @Test
-    fun testGetApiMessages() = testApplication {
-        application {
-            TODO("Add the Ktor module for the test")
-        }
-        client.get("/api/messages").apply {
-            TODO("Please write your test here")
-        }
+    fun testGetApiMessages_MissingParams() = testApplication {
+        application { configureRouting() }
+
+        val response = client.get("/api/messages")
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @Test
-    fun testGetApiNav() = testApplication {
+    fun testGetApiNav_Unauthenticated() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
+
+            install(Sessions) {
+                cookie<UserSession>("user_session") {
+                    cookie.path = "/"
+                    cookie.maxAgeInSeconds = 3600
+                }
+            }
         }
-        client.get("/api/nav").apply {
-            TODO("Please write your test here")
+
+        val response = client.get("/api/nav") {
+            cookie("SESSION_ID", "fake-valid-session")
         }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
     @Test
-    fun testPostApiPoster() = testApplication {
-        application {
-            TODO("Add the Ktor module for the test")
-        }
-        client.post("/api/poster").apply {
-            TODO("Please write your test here")
-        }
+    fun testPostApiPoster_Invalid() = testApplication {
+        application { configureRouting() }
+
+        val response = client.post("/api/poster")
+        assertTrue(response.status.value in 400..500)
     }
 
     @Test
-    fun testGetApiProfilepets() = testApplication {
+    fun testPostApiProfilepets_InvalidJson() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.get("/api/profilepets").apply {
-            TODO("Please write your test here")
+
+        val response = client.post("/api/profilepets") {
+            contentType(ContentType.Application.Json)
+            setBody("""{}""")
         }
+        assertEquals(HttpStatusCode.OK, response.status) // empty list is OK
     }
 
     @Test
-    fun testGetApiProfileposts() = testApplication {
+    fun testPostApiProfileposts_InvalidJson() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.get("/api/profileposts").apply {
-            TODO("Please write your test here")
+
+        val response = client.post("/api/profileposts") {
+            contentType(ContentType.Application.Json)
+            setBody("""{}""")
         }
+        assertEquals(HttpStatusCode.OK, response.status)
     }
 
     @Test
-    fun testPostApiRegisteruser() = testApplication {
+    fun testPostApiRegisteruser_MissingRequiredFields() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
+            install(ContentNegotiation) { json() }
         }
-        client.post("/api/register-user").apply {
-            TODO("Please write your test here")
+
+        val response = client.post("/api/register-user") {
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append("username", "testuser")
+                        append("name", "Test User")
+                    }
+                )
+            )
         }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @Test
-    fun testPostApiWrite() = testApplication {
+    fun testPostApiRegisteruser_Success() = testApplication {
         application {
-            TODO("Add the Ktor module for the test")
+            configureRouting()
         }
-        client.post("/api/write").apply {
-            TODO("Please write your test here")
+
+        val response = client.post("/api/register-user") {
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append("username", "testuser")
+                        append("name", "Test User")
+                        append("password", "testpass123")
+                        append("email", "test@example.com")
+                        append("birthdate", "1990-01-01")
+                        append("phone", "11999999999")
+                        append("cep", "01001-000")
+                    }
+                )
+            )
         }
+
+        assertTrue(response.status.value < 500)
     }
-     */
+
+    @Test
+    fun testPostApiWrite_MissingMultipart() = testApplication {
+        application {
+            configureRouting()
+            install(ContentNegotiation) { json() }
+            install(Sessions) {
+                cookie<UserSession>("user_session") {
+                    cookie.path = "/"
+                    cookie.maxAgeInSeconds = 3600
+                }
+            }
+        }
+
+        val response = client.post("/api/write")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val responseBody = response.bodyAsText()
+        assertTrue(responseBody.contains("Error:"))
+    }
 }

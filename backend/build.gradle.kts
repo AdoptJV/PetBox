@@ -58,7 +58,6 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets:$ktor_version")
 
     testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     // FreeMaker pra html dinamico
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
@@ -68,6 +67,10 @@ dependencies {
 
     testImplementation("io.ktor:ktor-client-plugins:2.3.10")
     testImplementation("io.ktor:ktor-server-test-host-jvm:3.1.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test") // Kotlin test DSL
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 }
 

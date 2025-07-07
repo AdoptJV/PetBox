@@ -1,41 +1,35 @@
 package com.jvdev
+
 import Message
 import PetDto
 import com.jvdev.com.ChatServer.ChatServer
 import com.jvdev.com.cep.Endereco
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.http.*
-import io.ktor.server.request.*
-import java.io.File
-import io.ktor.server.http.content.*
-import io.ktor.server.sessions.*
 import com.jvdev.com.cep.buscarEndereco
 import com.jvdev.com.cep.externalApiAvailable
-import com.jvdev.com.encryption.pswUtil
 import com.jvdev.com.database.*
-import com.jvdev.com.models.Pet
-import com.jvdev.com.models.User
-import com.jvdev.com.models.Comment
-import com.jvdev.com.models.Post
-import com.jvdev.com.models.Sex
+import com.jvdev.com.encryption.pswUtil
+import com.jvdev.com.models.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.server.application.*
+import io.ktor.server.http.content.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.serialization.json.Json
-import io.ktor.http.content.*
-import io.ktor.server.util.*
+import kotlinx.serialization.json.*
+import java.io.File
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import kotlinx.serialization.json.*
-import kotlinx.serialization.json.jsonPrimitive
-import kotlin.io.use
 
 const val debug = true
 
 fun Application.configureRouting() {
     val root = File(System.getProperty("user.dir")) // define o caminho até a raiz do projeto
     if (debug) println("raiz: $root")
+    install(WebSockets)
     routing {
         singlePageApplication {
             react("/react-frontend")
@@ -208,7 +202,7 @@ fun Application.configureRouting() {
 
                     println(petCityList)
                     val petCityJson = Json.encodeToString(petCityList)
-                    if(debug) println(petCityJson)
+                    if (debug) println(petCityJson)
 
                     call.respond(HttpStatusCode.OK, petCityJson)
                 }
@@ -225,7 +219,7 @@ fun Application.configureRouting() {
                 val petUserList = getPetByUser(userId)
                 println(petUserList)
                 val petUserJson = Json.encodeToString(petUserList)
-                if(debug) println(petUserJson)
+                if (debug) println(petUserJson)
 
                 call.respond(HttpStatusCode.OK, petUserJson)
             }
@@ -244,7 +238,7 @@ fun Application.configureRouting() {
                     println("Query Posts")
                     val postList = queryAllPosts()
                     val postJson = Json.encodeToString(postList)
-                    if(debug) println(postList)
+                    if (debug) println(postList)
 
                     call.respond(HttpStatusCode.OK, postJson)
                 }
@@ -260,13 +254,13 @@ fun Application.configureRouting() {
                 println("Query user posts")
                 val postList = getPostByUser(userId)
                 val postJson = Json.encodeToString(postList)
-                if(debug) println(postList)
+                if (debug) println(postList)
 
                 call.respond(HttpStatusCode.OK, postJson)
             }
 
             post("/getuser") {
-                if(debug) println("getuser request")
+                if (debug) println("getuser request")
                 val json = call.receive<JsonObject>()
                 val userId = json["userId"]?.jsonPrimitive?.content ?: "unknown"
 
@@ -276,7 +270,7 @@ fun Application.configureRouting() {
                     put("userId", userId)
                     put("username", username)
                 }
-                if(debug) println(response)
+                if (debug) println(response)
                 call.respond(response)
             }
 
@@ -290,7 +284,7 @@ fun Application.configureRouting() {
                 }
 
                 val comments: List<Comment> = getCommentByPost(postID) ?: emptyList()
-                if(debug) println(comments.isEmpty().toString() + " " + comments)
+                if (debug) println(comments.isEmpty().toString() + " " + comments)
 
                 call.respond(HttpStatusCode.OK, comments)
             }
@@ -305,7 +299,7 @@ fun Application.configureRouting() {
                     val post = json["post"]?.jsonPrimitive?.intOrNull
                     val session = call.sessions.get<UserSession>()
 
-                    if(debug) println("Oi comentário")
+                    if (debug) println("Oi comentário")
 
                     val comment = Comment(
                         id = -1,
@@ -324,7 +318,7 @@ fun Application.configureRouting() {
                     }
 
                 } catch (e: Exception) {
-                    if(debug) println("Deu pau")
+                    if (debug) println("Deu pau")
                     call.respond(mapOf("message" to "Error: ${e.message}"))
                 }
             }
@@ -368,7 +362,7 @@ fun Application.configureRouting() {
                         ddd = "00",
                         siafi = "?"
                     )
-                    val address = if(externalApiAvailable.get()) buscarEndereco(cep) else mock
+                    val address = if (externalApiAvailable.get()) buscarEndereco(cep) else mock
                     if (debug) println("endereco obtido: $address")
                     call.respond(address)
                 } catch (e: Exception) {
@@ -496,8 +490,8 @@ fun Application.configureRouting() {
                     siafi = "?"
                 )
 
-                val endereco = if(externalApiAvailable.get()) buscarEndereco(formData["cep"]!!) else mock
-                if(endereco != mock) insertAddress(endereco)
+                val endereco = if (externalApiAvailable.get()) buscarEndereco(formData["cep"]!!) else mock
+                if (endereco != mock) insertAddress(endereco)
 
                 val user = User(
                     id = -1,
@@ -607,12 +601,14 @@ fun Application.configureRouting() {
                         is PartData.FormItem -> {
                             formData[part.name ?: ""] = part.value
                         }
+
                         is PartData.FileItem -> {
                             if (part.name == "profilePicture") {
                                 petPictureFileName = part.originalFileName
                                 petPictureBytes = part.streamProvider().readBytes()
                             }
                         }
+
                         else -> {}
                     }
                     part.dispose()
@@ -626,7 +622,10 @@ fun Application.configureRouting() {
 
                 // Extrair e converter os dados
                 val name = formData["name"]!!
-                val age = formData["age"]!!.toIntOrNull() ?: return@post call.respond(HttpStatusCode.BadRequest, mapOf("message" to "age inválido"))
+                val age = formData["age"]!!.toIntOrNull() ?: return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("message" to "age inválido")
+                )
                 val sex = formData["sex"]!!  // depende de como você está enviando (ex: "M"/"F" ou "true"/"false")
                 val specie = formData["specie"]!!
                 val castrated = formData["castrated"]!!.toBooleanStrictOrNull() ?: false
@@ -643,7 +642,9 @@ fun Application.configureRouting() {
                     photoUrl = null,
                     description = description.toString()
                 )
-                if (debug) { println(pet) }
+                if (debug) {
+                    println(pet)
+                }
                 val success = insertPet(pet)
                 val id = getPetID(name, call.sessions.get<UserSession>()?.id ?: -1, specie)
 
